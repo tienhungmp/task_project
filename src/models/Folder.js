@@ -8,12 +8,6 @@ const folderSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  areaId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Area',
-    required: true,
-    index: true
-  },
   parentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Folder',
@@ -23,6 +17,17 @@ const folderSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
+  },
+  description: {
+    type: String,
+  },
+  color: {
+    type: Number,
+    required: true,
+  },
+  icon: {
+    type: Number,
+    required: true,
   },
   passwordHash: {
     type: String,
@@ -35,16 +40,16 @@ const folderSchema = new mongoose.Schema({
 folderSchema.index({ userId: 1, areaId: 1 });
 folderSchema.index({ parentId: 1 });
 
-folderSchema.methods.setPassword = async function(password) {
+folderSchema.methods.setPassword = async function (password) {
   this.passwordHash = await bcrypt.hash(password, 10);
 };
 
-folderSchema.methods.verifyPassword = async function(password) {
+folderSchema.methods.verifyPassword = async function (password) {
   if (!this.passwordHash) return true;
   return bcrypt.compare(password, this.passwordHash);
 };
 
-folderSchema.methods.toJSON = function() {
+folderSchema.methods.toJSON = function () {
   const obj = this.toObject();
   obj.isProtected = !!obj.passwordHash;
   delete obj.passwordHash;
