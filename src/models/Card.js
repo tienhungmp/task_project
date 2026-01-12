@@ -1,21 +1,68 @@
 const mongoose = require('mongoose');
 
+const checklistItemSchema = new mongoose.Schema({
+  text: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  checked: {
+    type: Boolean,
+    default: false
+  }
+}, { _id: true });
+
 const blockSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ['text', 'checklist', 'table', 'media', 'link'],
+    enum: ['text', 'checklist', 'table', 'media'],
     required: true
-  },
-  content: mongoose.Schema.Types.Mixed,
-  isCompleted: {
-    type: Boolean,
-    default: false
   },
   order: {
     type: Number,
     default: 0
+  },
+  // TEXT block fields
+  textContent: {
+    type: String,
+    default: null
+  },
+  // CHECKLIST block fields
+  checklistItems: {
+    type: [checklistItemSchema],
+    default: undefined
+  },
+  // TABLE block fields
+  tableData: {
+    type: [[String]], // 2D array of strings
+    default: undefined
+  },
+  // MEDIA block fields
+  mediaUrl: {
+    type: String,
+    default: null
+  },
+  mediaType: {
+    type: String,
+    enum: ['image', 'video', 'audio', 'file', 'link', null],
+    default: null
+  },
+  mediaName: {
+    type: String,
+    default: null
   }
 }, { _id: true });
+
+// Virtual to compute checklist completion
+blockSchema.virtual('isCompleted').get(function() {
+  if (this.type !== 'checklist' || !this.checklistItems || this.checklistItems.length === 0) {
+    return false;
+  }
+  return this.checklistItems.every(item => item.checked);
+});
+
+blockSchema.set('toJSON', { virtuals: true });
+blockSchema.set('toObject', { virtuals: true });
 
 const cardSchema = new mongoose.Schema({
   userId: {

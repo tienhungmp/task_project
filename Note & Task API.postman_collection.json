@@ -588,7 +588,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"folderId\": \"{{folderId}}\",\n  \"title\": \"Meeting Notes\",\n  \"content\": \"Discussed project timeline and deliverables\",\n  \"tags\": [\"meeting\", \"notes\"],\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"content\": \"Main discussion points\",\n      \"order\": 0\n    },\n    {\n      \"type\": \"checklist\",\n      \"content\": [\"Send follow-up email\", \"Update roadmap\"],\n      \"order\": 1\n    }\n  ]\n}"
+              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"folderId\": \"{{folderId}}\",\n  \"title\": \"Meeting Notes\",\n  \"content\": \"Discussed project timeline and deliverables\",\n  \"tags\": [\"meeting\", \"notes\"],\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"textContent\": \"Main discussion points from today's meeting\",\n      \"order\": 0\n    },\n    {\n      \"type\": \"checklist\",\n      \"checklistItems\": [\n        {\"text\": \"Send follow-up email to stakeholders\", \"checked\": false},\n        {\"text\": \"Update project roadmap\", \"checked\": false},\n        {\"text\": \"Schedule next meeting\", \"checked\": true}\n      ],\n      \"order\": 1\n    },\n    {\n      \"type\": \"table\",\n      \"tableData\": [\n        [\"Task\", \"Owner\", \"Deadline\"],\n        [\"API Development\", \"John\", \"2026-01-20\"],\n        [\"UI Design\", \"Sarah\", \"2026-01-18\"]\n      ],\n      \"order\": 2\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/cards",
@@ -665,7 +665,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"content\": \"Updated content\",\n      \"order\": 0\n    },\n    {\n      \"type\": \"checklist\",\n      \"content\": [\"Task 1\", \"Task 2\", \"Task 3\"],\n      \"isCompleted\": false,\n      \"order\": 1\n    },\n    {\n      \"type\": \"table\",\n      \"content\": [[\"Col1\", \"Col2\"], [\"Data1\", \"Data2\"]],\n      \"order\": 2\n    }\n  ]\n}"
+              "raw": "{\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"textContent\": \"Updated meeting summary\",\n      \"order\": 0\n    },\n    {\n      \"type\": \"checklist\",\n      \"checklistItems\": [\n        {\"text\": \"Review code changes\", \"checked\": true},\n        {\"text\": \"Write unit tests\", \"checked\": false},\n        {\"text\": \"Deploy to staging\", \"checked\": false}\n      ],\n      \"order\": 1\n    },\n    {\n      \"type\": \"media\",\n      \"mediaUrl\": \"https://example.com/image.png\",\n      \"mediaType\": \"image\",\n      \"mediaName\": \"screenshot.png\",\n      \"order\": 2\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/blocks",
