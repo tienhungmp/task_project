@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const blockSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ['text', 'checklist', 'table', 'media'],
+    enum: ['text', 'checklist', 'table', 'media', 'link'],
     required: true
   },
   content: mongoose.Schema.Types.Mixed,
