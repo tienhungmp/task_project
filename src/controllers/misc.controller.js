@@ -71,6 +71,31 @@ class AIController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  async classifyNote(req, res) {
+    try {
+      const { content, title, tags } = req.body;
+      const classification = await aiService.classifyNote(
+        req.userId,
+        content,
+        title,
+        tags || []
+      );
+      res.json(classification);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async autoOrganizeNote(req, res) {
+    try {
+      const { cardId } = req.params;
+      const result = await aiService.autoOrganizeNote(req.userId, cardId);
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = {

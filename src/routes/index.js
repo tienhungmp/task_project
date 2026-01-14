@@ -75,5 +75,7 @@ router.get('/sync', authenticate, syncController.sync);
 
 // AI
 router.post('/ai/analyze-card', authenticate, aiController.analyzeCard);
+router.post('/ai/classify-note', authenticate, aiController.classifyNote);
+router.post('/ai/auto-organize/:cardId', authenticate, aiController.autoOrganizeNote);
 
 module.exports = router;
