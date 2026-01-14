@@ -73,6 +73,21 @@ class CardController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  async getByFolder(req, res) {
+    try {
+      const { page = 1, limit = 20 } = req.query;
+      const result = await cardService.getByFolder(
+        req.userId,
+        req.params.folderId,
+        parseInt(page),
+        parseInt(limit)
+      );
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new CardController();

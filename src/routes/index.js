@@ -57,6 +57,9 @@ router.put('/cards/:id', authenticate, cardController.update);
 router.delete('/cards/:id', authenticate, cardController.delete);
 router.post('/cards/:id/move', authenticate, cardController.move);
 
+// Get cards by folder
+router.get('/folders/:folderId/cards', authenticate, cardController.getByFolder);
+
 // BLOCK ROUTES
 router.put('/cards/:cardId/blocks', authenticate, validate(blocksUpdateSchema), cardController.updateBlocks);
 

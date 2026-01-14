@@ -31,6 +31,37 @@ class CardService {
     };
   }
 
+  async getByFolder(userId, folderId, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const query = { 
+      userId, 
+      folderId, 
+      deletedAt: null,
+      isArchived: false 
+    };
+
+    const [cards, total] = await Promise.all([
+      Card.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('areaId', 'name color')
+        .populate('folderId', 'name color icon')
+        .lean(),
+      Card.countDocuments(query)
+    ]);
+
+    return {
+      cards,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+
   async getById(id, userId) {
     const card = await Card.findOne({ _id: id, userId, deletedAt: null }).lean();
     if (!card) {
