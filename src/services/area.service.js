@@ -1,4 +1,7 @@
 const Area = require('../models/Area');
+const Folder = require('../models/Folder');
+const Card = require('../models/Card');
+const Project = require('../models/Project');
 
 class AreaService {
   async getAll(userId, page = 1, limit = 20) {
@@ -9,8 +12,36 @@ class AreaService {
       Area.countDocuments({ userId })
     ]);
 
+    // Get counts for each area
+    const areasWithCounts = await Promise.all(
+      areas.map(async (area) => {
+        const [folderCount, noteCount, projectCount] = await Promise.all([
+          Folder.countDocuments({ 
+            userId, 
+            areaId: area._id 
+          }),
+          Card.countDocuments({ 
+            userId, 
+            areaId: area._id, 
+            deletedAt: null 
+          }),
+          Project.countDocuments({ 
+            userId, 
+            folderId: { $in: await Folder.find({ userId, areaId: area._id }).distinct('_id') }
+          })
+        ]);
+        
+        return {
+          ...area,
+          folderCount,
+          noteCount,
+          projectCount
+        };
+      })
+    );
+
     return {
-      areas,
+      areas: areasWithCounts,
       pagination: {
         total,
         page,
@@ -29,6 +60,14 @@ class AreaService {
   }
 
   async create(userId, data) {
+    // Validate required fields
+    if (!data.color && data.color !== 0) {
+      throw new Error('Color is required');
+    }
+    if (!data.icon && data.icon !== 0) {
+      throw new Error('Icon is required');
+    }
+    
     const area = new Area({ userId, ...data });
     await area.save();
     return area;
