@@ -6,34 +6,59 @@ const Project = require('../models/Project');
 class AreaService {
   async getAll(userId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
-    
+
     const [areas, total] = await Promise.all([
-      Area.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Area.find({ userId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
       Area.countDocuments({ userId })
     ]);
 
-    // Get counts for each area
     const areasWithCounts = await Promise.all(
       areas.map(async (area) => {
-        const [folderCount, noteCount, projectCount] = await Promise.all([
-          Folder.countDocuments({ 
-            userId, 
-            areaId: area._id 
+        const folderIds = await Folder
+          .find({ userId, areaId: area._id })
+          .distinct('_id');
+
+        const [
+          folderCount,
+          taskCount,
+          noteCount,
+          projectCount
+        ] = await Promise.all([
+          Folder.countDocuments({
+            userId,
+            areaId: area._id
           }),
-          Card.countDocuments({ 
-            userId, 
-            areaId: area._id, 
-            deletedAt: null 
+
+          // TASK: có dueDate
+          Card.countDocuments({
+            userId,
+            areaId: area._id,
+            deletedAt: null,
+            dueDate: { $ne: null }
           }),
-          Project.countDocuments({ 
-            userId, 
-            folderId: { $in: await Folder.find({ userId, areaId: area._id }).distinct('_id') }
+
+          // NOTE: không có dueDate
+          Card.countDocuments({
+            userId,
+            areaId: area._id,
+            deletedAt: null,
+            dueDate: null
+          }),
+
+          Project.countDocuments({
+            userId,
+            folderId: { $in: folderIds }
           })
         ]);
-        
+
         return {
           ...area,
           folderCount,
+          taskCount,
           noteCount,
           projectCount
         };
@@ -41,15 +66,15 @@ class AreaService {
     );
 
     return {
-      areas: areasWithCounts,
+      data: areasWithCounts,
       pagination: {
-        total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
+        total
       }
     };
   }
+
 
   async getById(id, userId) {
     const area = await Area.findOne({ _id: id, userId }).lean();
