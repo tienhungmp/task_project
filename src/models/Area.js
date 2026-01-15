@@ -12,9 +12,15 @@ const areaSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  color: {
+  description: {
     type: String,
-    default: '#3B82F6'
+    default: ''
+  },
+  color: {
+    type: Number,
+  },
+  icon: {
+    type: Number,
   }
 }, {
   timestamps: true

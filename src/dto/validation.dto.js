@@ -1,8 +1,7 @@
 const Joi = require('joi');
 
 const areaSchema = Joi.object({
-  name: Joi.string().min(1).required(),
-  color: Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/).optional()
+  name: Joi.string().min(1).required()
 });
 
 const folderSchema = Joi.object({
