@@ -1,9 +1,11 @@
 const Joi = require('joi');
 
 const areaSchema = Joi.object({
-  name: Joi.string().min(1).required()
+  name: Joi.string().min(1).required(),
+  description: Joi.string().allow('').optional(),
+  color: Joi.number().integer().required(),
+  icon: Joi.number().integer().required()
 });
-
 const folderSchema = Joi.object({
   areaId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
   parentId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().allow(null),
