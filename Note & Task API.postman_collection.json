@@ -1,909 +1,1456 @@
 {
-  "info": {
-    "name": "Note & Task API",
-    "description": "Complete API testing for Mobile Note & Task Management",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:3000/api"
-    },
-    {
-      "key": "accessToken",
-      "value": ""
-    },
-    {
-      "key": "refreshToken",
-      "value": ""
-    },
-    {
-      "key": "userId",
-      "value": ""
-    },
-    {
-      "key": "areaId",
-      "value": ""
-    },
-    {
-      "key": "folderId",
-      "value": ""
-    },
-    {
-      "key": "projectId",
-      "value": ""
-    },
-    {
-      "key": "cardId",
-      "value": ""
-    }
-  ],
-  "item": [
-    {
-      "name": "1. Authentication",
-      "item": [
-        {
-          "name": "Register User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "pm.collectionVariables.set('accessToken', res.accessToken);",
-                  "pm.collectionVariables.set('refreshToken', res.refreshToken);",
-                  "pm.collectionVariables.set('userId', res.user._id);",
-                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
-                  "pm.test('Has tokens', () => {",
-                  "  pm.expect(res.accessToken).to.exist;",
-                  "  pm.expect(res.refreshToken).to.exist;",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "email",
-                  "value": "test@example.com",
-                  "type": "text"
-                },
-                {
-                  "key": "password",
-                  "value": "password123",
-                  "type": "text"
-                },
-                {
-                  "key": "name",
-                  "value": "Test User",
-                  "type": "text"
-                },
-                {
-                  "key": "avatar",
-                  "type": "file",
-                  "src": []
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
-            }
-          }
-        },
-        {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "pm.collectionVariables.set('accessToken', res.accessToken);",
-                  "pm.collectionVariables.set('refreshToken', res.refreshToken);",
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
-            }
-          }
-        },
-        {
-          "name": "Refresh Token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "pm.collectionVariables.set('accessToken', res.accessToken);",
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "refresh"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "2. User Profile",
-      "item": [
-        {
-          "name": "Get Profile",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Has user data', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.email).to.exist;",
-                  "  pm.expect(res.name).to.exist;",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "profile"]
-            }
-          }
-        },
-        {
-          "name": "Update Profile",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Profile updated', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.name).to.equal('Updated User');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated User\",\n  \"email\": \"updated@example.com\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/user/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "profile"]
-            }
-          }
-        },
-        {
-          "name": "Update Avatar",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Avatar updated', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.avatarUrl).to.exist;",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "avatar",
-                  "type": "file",
-                  "src": []
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/user/avatar",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "avatar"]
-            }
-          }
-        },
-        {
-          "name": "Change Password",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Password changed', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.message).to.equal('Password changed successfully');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword456\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/user/password",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "password"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "3. Areas",
-      "item": [
-        {
-          "name": "Create Area",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "pm.collectionVariables.set('areaId', res._id);",
-                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Work\",\n  \"color\": \"#3B82F6\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/areas",
-              "host": ["{{baseUrl}}"],
-              "path": ["areas"]
-            }
-          }
-        },
-        {
-          "name": "Get All Areas",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Has pagination', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.pagination).to.exist;",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/areas?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["areas"],
-              "query": [
-                {"key": "page", "value": "1"},
-                {"key": "limit", "value": "20"}
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Area",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Work Updated\",\n  \"color\": \"#EF4444\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/areas/{{areaId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["areas", "{{areaId}}"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "4. Folders",
-      "item": [
-        {
-          "name": "Create Folder",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "pm.collectionVariables.set('folderId', res._id);",
-                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"name\": \"Projects\",\n  \"description\": \"Work projects folder\",\n  \"color\": 1,\n  \"icon\": 5\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/folders",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders"]
-            }
-          }
-        },
-        {
-          "name": "Create Protected Folder",
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"name\": \"Private\",\n  \"description\": \"Confidential documents\",\n  \"color\": 2,\n  \"icon\": 8,\n  \"password\": \"secret123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/folders",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders"]
-            }
-          }
-        },
-        {
-          "name": "Update Folder",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Projects\",\n  \"description\": \"Updated description\",\n  \"color\": 3,\n  \"icon\": 10\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/folders/{{folderId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders", "{{folderId}}"]
-            }
-          }
-        },
-        {
-          "name": "Get Folders by Area",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/folders?areaId={{areaId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders"],
-              "query": [{"key": "areaId", "value": "{{areaId}}"}]
-            }
-          }
-        },
-        {
-          "name": "Verify Folder Access",
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"password\": \"secret123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/folders/{{folderId}}/access",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders", "{{folderId}}", "access"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "5. Projects",
-      "item": [
-        {
-          "name": "Create Project",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "pm.collectionVariables.set('projectId', res._id);",
-                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"folderId\": \"{{folderId}}\",\n  \"name\": \"Q1 Planning\",\n  \"energyLevel\": \"high\",\n  \"hideCompleted\": false\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/projects",
-              "host": ["{{baseUrl}}"],
-              "path": ["projects"]
-            }
-          }
-        },
-        {
-          "name": "Get Projects by Folder",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/projects?folderId={{folderId}}&page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["projects"],
-              "query": [
-                {"key": "folderId", "value": "{{folderId}}"},
-                {"key": "page", "value": "1"},
-                {"key": "limit", "value": "20"}
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "6. Cards",
-      "item": [
-        {
-          "name": "Create Task Card",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "pm.collectionVariables.set('cardId', res._id);",
-                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"projectId\": \"{{projectId}}\",\n  \"title\": \"Complete API documentation\",\n  \"content\": \"Write comprehensive docs for all endpoints\",\n  \"tags\": [\"urgent\", \"documentation\"],\n  \"status\": \"todo\",\n  \"energyLevel\": \"high\",\n  \"dueDate\": \"2026-01-15T10:00:00Z\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cards",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards"]
-            }
-          }
-        },
-        {
-          "name": "Create Card with Checklist",
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"folderId\": \"{{folderId}}\",\n  \"title\": \"Meeting Notes\",\n  \"content\": \"Discussed project timeline and deliverables\",\n  \"tags\": [\"meeting\", \"notes\"],\n  \"link\": \"https://zoom.us/meeting/123\",\n  \"imageUrl\": \"https://example.com/screenshot.png\",\n  \"checklist\": [\n    {\"text\": \"Send follow-up email\", \"checked\": false},\n    {\"text\": \"Update roadmap\", \"checked\": false},\n    {\"text\": \"Schedule next meeting\", \"checked\": true}\n  ]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cards",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards"]
-            }
-          }
-        },
-        {
-          "name": "Get Cards with Filters",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/cards?projectId={{projectId}}&status=todo&page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards"],
-              "query": [
-                {"key": "projectId", "value": "{{projectId}}"},
-                {"key": "status", "value": "todo"},
-                {"key": "page", "value": "1"},
-                {"key": "limit", "value": "20"}
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Cards by Folder",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Has cards array', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.cards).to.be.an('array');",
-                  "  pm.expect(res.pagination).to.exist;",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/folders/{{folderId}}/cards?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders", "{{folderId}}", "cards"],
-              "query": [
-                {"key": "page", "value": "1"},
-                {"key": "limit", "value": "20"}
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Card Status",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"doing\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cards/{{cardId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}"]
-            }
-          }
-        },
-        {
-          "name": "Move Card to Project",
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"targetProjectId\": \"{{projectId}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cards/{{cardId}}/move",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}", "move"]
-            }
-          }
-        },
-        {
-          "name": "Delete Card (Soft)",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/cards/{{cardId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Update Card Checklist",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {"key": "Content-Type", "value": "application/json"},
-          {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"checklist\": [\n    {\"text\": \"Review code changes\", \"checked\": true},\n    {\"text\": \"Write unit tests\", \"checked\": false},\n    {\"text\": \"Deploy to staging\", \"checked\": true}\n  ]\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/cards/{{cardId}}/checklist",
-          "host": ["{{baseUrl}}"],
-          "path": ["cards", "{{cardId}}", "checklist"]
-        }
-      }
-    },
-    {
-      "name": "7. Search",
-      "item": [
-        {
-          "name": "Search Cards",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/search?q=documentation&tags[]=urgent&tags[]=work&dateFrom=2026-01-01",
-              "host": ["{{baseUrl}}"],
-              "path": ["search"],
-              "query": [
-                {"key": "q", "value": "documentation"},
-                {"key": "tags[]", "value": "urgent"},
-                {"key": "tags[]", "value": "work"},
-                {"key": "dateFrom", "value": "2026-01-01"}
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "8. Dashboard",
-      "item": [
-        {
-          "name": "Energy Overview",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/energy-overview",
-              "host": ["{{baseUrl}}"],
-              "path": ["dashboard", "energy-overview"]
-            }
-          }
-        },
-        {
-          "name": "Get Stats (Week)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/stats?period=week",
-              "host": ["{{baseUrl}}"],
-              "path": ["dashboard", "stats"],
-              "query": [{"key": "period", "value": "week"}]
-            }
-          }
-        },
-        {
-          "name": "Get Stats (Month)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/stats?period=month",
-              "host": ["{{baseUrl}}"],
-              "path": ["dashboard", "stats"],
-              "query": [{"key": "period", "value": "month"}]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "9. Sync (Mobile)",
-      "item": [
-        {
-          "name": "Incremental Sync",
-          "request": {
-            "method": "GET",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/sync?lastSync=2026-01-01T00:00:00Z",
-              "host": ["{{baseUrl}}"],
-              "path": ["sync"],
-              "query": [{"key": "lastSync", "value": "2026-01-01T00:00:00Z"}]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "10. AI Mock",
-      "item": [
-        {
-          "name": "Analyze Card Content",
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Urgent: Review quarterly report and prepare presentation for board meeting next week\",\n  \"attachments\": []\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ai/analyze-card",
-              "host": ["{{baseUrl}}"],
-              "path": ["ai", "analyze-card"]
-            }
-          }
-        },
-        {
-          "name": "Classify Note",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Has classification', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.topic).to.exist;",
-                  "  pm.expect(res.confidence).to.be.a('number');",
-                  "  pm.expect(res.suggestedTags).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Q1 Budget Planning\",\n  \"content\": \"Need to review all expenses for Q1 and prepare budget report. Meeting with finance team scheduled for next week to discuss allocation and potential cost savings.\",\n  \"tags\": [\"planning\"]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ai/classify-note",
-              "host": ["{{baseUrl}}"],
-              "path": ["ai", "classify-note"]
-            }
-          }
-        },
-        {
-          "name": "Auto-Organize Note",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Has organization result', () => {",
-                  "  const res = pm.response.json();",
-                  "  pm.expect(res.autoOrganized).to.be.a('boolean');",
-                  "  pm.expect(res.confidence).to.be.a('number');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/ai/auto-organize/{{cardId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["ai", "auto-organize", "{{cardId}}"]
-            }
-          }
-        }
-      ]
-    }
-  ]
+	"info": {
+		"_postman_id": "956c2904-64c5-4721-961a-cdbd4b0dc3b9",
+		"name": "Note & Task API",
+		"description": "Complete API testing for Mobile Note & Task Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22665569",
+		"_collection_link": "https://interstellar-zodiac-465988.postman.co/workspace/homestay~7892e020-3060-4c0e-8655-23a1bf9e184c/collection/22665569-956c2904-64c5-4721-961a-cdbd4b0dc3b9?action=share&source=collection_link&creator=22665569"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"pm.collectionVariables.set('accessToken', res.accessToken);",
+									"pm.collectionVariables.set('refreshToken', res.refreshToken);",
+									"pm.collectionVariables.set('userId', res.user._id);",
+									"pm.test('Status 201', () => pm.response.to.have.status(201));",
+									"pm.test('Has tokens', () => {",
+									"  pm.expect(res.accessToken).to.exist;",
+									"  pm.expect(res.refreshToken).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "test@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password123",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Test User",
+									"type": "text"
+								},
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"pm.collectionVariables.set('accessToken', res.accessToken);",
+									"pm.collectionVariables.set('refreshToken', res.refreshToken);",
+									"pm.test('Status 200', () => pm.response.to.have.status(200));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"pm.collectionVariables.set('accessToken', res.accessToken);",
+									"pm.test('Status 200', () => pm.response.to.have.status(200));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. User Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Has user data', () => {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res.email).to.exist;",
+									"  pm.expect(res.name).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Profile updated', () => {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res.name).to.equal('Updated User');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated User\",\n  \"email\": \"updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Avatar",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Avatar updated', () => {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res.avatarUrl).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/avatar",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Password changed', () => {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res.message).to.equal('Password changed successfully');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Areas",
+			"item": [
+				{
+					"name": "Create Area",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"pm.collectionVariables.set('areaId', res._id);",
+									"pm.test('Status 201', () => pm.response.to.have.status(201));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Work\",\n  \"color\": 2,\n  \"icon\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/areas",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"areas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Areas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Has pagination', () => {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res.pagination).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/areas?page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"areas"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Area",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Work Updated\",\n  \"color\": \"#EF4444\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/areas/{{areaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"areas",
+								"{{areaId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Folders",
+			"item": [
+				{
+					"name": "Create Folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"pm.collectionVariables.set('folderId', res._id);",
+									"pm.test('Status 201', () => pm.response.to.have.status(201));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"name\": \"Projects\",\n  \"description\": \"Work projects folder\",\n  \"color\": 1,\n  \"icon\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/folders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"folders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected Folder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"name\": \"Private\",\n  \"description\": \"Confidential documents\",\n  \"color\": 2,\n  \"icon\": 8,\n  \"password\": \"secret123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/folders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"folders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Folder",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Projects\",\n  \"description\": \"Updated description\",\n  \"color\": 3,\n  \"icon\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/folders/{{folderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"folders",
+								"{{folderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Folders by Area",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/folders?areaId={{areaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"folders"
+							],
+							"query": [
+								{
+									"key": "areaId",
+									"value": "{{areaId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Folder Access",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"secret123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/folders/{{folderId}}/access",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"folders",
+								"{{folderId}}",
+								"access"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Projects",
+			"item": [
+				{
+					"name": "Create Project",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"pm.collectionVariables.set('projectId', res._id);",
+									"pm.test('Status 201', () => pm.response.to.have.status(201));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"folderId\": \"{{folderId}}\",\n  \"name\": \"Q1 Planning\",\n  \"energyLevel\": \"high\",\n  \"hideCompleted\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Projects by Folder",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/projects?folderId={{folderId}}&page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"projects"
+							],
+							"query": [
+								{
+									"key": "folderId",
+									"value": "{{folderId}}"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Cards",
+			"item": [
+				{
+					"name": "Create Task Card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"pm.collectionVariables.set('cardId', res._id);",
+									"pm.test('Status 201', () => pm.response.to.have.status(201));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"projectId\": \"{{projectId}}\",\n  \"title\": \"Complete API documentation\",\n  \"content\": \"Write comprehensive docs for all endpoints\",\n  \"tags\": [\"urgent\", \"documentation\"],\n  \"status\": \"todo\",\n  \"energyLevel\": \"high\",\n  \"dueDate\": \"2026-01-15T10:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cards",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Card with Checklist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"folderId\": \"{{folderId}}\",\n  \"title\": \"Meeting Notes\",\n  \"content\": \"Discussed project timeline and deliverables\",\n  \"tags\": [\"meeting\", \"notes\"],\n  \"link\": \"https://zoom.us/meeting/123\",\n  \"imageUrl\": \"https://example.com/screenshot.png\",\n  \"checklist\": [\n    {\"text\": \"Send follow-up email\", \"checked\": false},\n    {\"text\": \"Update roadmap\", \"checked\": false},\n    {\"text\": \"Schedule next meeting\", \"checked\": true}\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cards",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cards with Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cards?projectId={{projectId}}&status=todo&page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cards"
+							],
+							"query": [
+								{
+									"key": "projectId",
+									"value": "{{projectId}}"
+								},
+								{
+									"key": "status",
+									"value": "todo"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cards by Folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200', () => pm.response.to.have.status(200));",
+									"pm.test('Has cards array', () => {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res.cards).to.be.an('array');",
+									"  pm.expect(res.pagination).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/folders/{{folderId}}/cards?page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"folders",
+								"{{folderId}}",
+								"cards"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Card Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"doing\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cards/{{cardId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cards",
+								"{{cardId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Move Card to Project",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"targetProjectId\": \"{{projectId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cards/{{cardId}}/move",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cards",
+								"{{cardId}}",
+								"move"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Card (Soft)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cards/{{cardId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cards",
+								"{{cardId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Search",
+			"item": [
+				{
+					"name": "Search Cards",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/search?q=documentation&tags[]=urgent&tags[]=work&dateFrom=2026-01-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "documentation"
+								},
+								{
+									"key": "tags[]",
+									"value": "urgent"
+								},
+								{
+									"key": "tags[]",
+									"value": "work"
+								},
+								{
+									"key": "dateFrom",
+									"value": "2026-01-01"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8. Dashboard",
+			"item": [
+				{
+					"name": "Energy Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/dashboard/energy-overview",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"dashboard",
+								"energy-overview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stats (Week)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/dashboard/stats?period=week",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"dashboard",
+								"stats"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "week"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Stats (Month)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/dashboard/stats?period=month",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"dashboard",
+								"stats"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "month"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Sync (Mobile)",
+			"item": [
+				{
+					"name": "Incremental Sync",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/sync?lastSync=2026-01-01T00:00:00Z",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sync"
+							],
+							"query": [
+								{
+									"key": "lastSync",
+									"value": "2026-01-01T00:00:00Z"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "10. AI",
+			"item": [
+				{
+					"name": "AI Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200 or 503', () => {",
+									"  pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+									"});",
+									"pm.test('Has aiBackend info', () => {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res.aiBackend).to.exist;",
+									"  pm.expect(res.aiBackend.status).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ai/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Analyze Card Content",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200 or 503', () => {",
+									"  pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"  pm.test('Has analysis data', () => {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.success).to.be.true;",
+									"    pm.expect(res.analysis).to.exist;",
+									"    pm.expect(res.analysis.suggestedProject).to.exist;",
+									"    pm.expect(res.analysis.suggestedTopic).to.exist;",
+									"    pm.expect(res.analysis.aiTasks).to.be.an('array');",
+									"    pm.expect(res.analysis.projectsSuggested).to.be.an('array');",
+									"    pm.expect(res.analysis.topicsSuggested).to.be.an('array');",
+									"  });",
+									"}",
+									"",
+									"if (pm.response.code === 503) {",
+									"  pm.test('AI service unavailable', () => {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.error).to.include('unavailable');",
+									"  });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"I need to:\\n1. Review the quarterly sales report\\n2. Prepare presentation slides for the board meeting\\n3. Schedule follow-up calls with top 5 clients\\n4. Update the CRM system with latest deals\",\n  \"attachments\": []\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/analyze-card",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"analyze-card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Classify Note",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200 or 503', () => {",
+									"  pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"  pm.test('Has classification data', () => {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.success).to.be.true;",
+									"    pm.expect(res.classification).to.exist;",
+									"    pm.expect(res.classification.topic).to.exist;",
+									"    pm.expect(res.classification.confidence).to.be.a('number');",
+									"    pm.expect(res.classification.suggestedTags).to.be.an('array');",
+									"    pm.expect(res.classification.aiProjectsSuggested).to.be.an('array');",
+									"    pm.expect(res.classification.aiTopicsSuggested).to.be.an('array');",
+									"    pm.expect(res.classification.reasoning).to.exist;",
+									"  });",
+									"}",
+									"",
+									"if (pm.response.code === 503) {",
+									"  pm.test('AI service unavailable', () => {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.error).to.include('unavailable');",
+									"  });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Product Launch Planning\",\n  \"content\": \"We need to:\\n- Finalize the marketing campaign strategy\\n- Coordinate with the design team for promotional materials\\n- Set up analytics tracking for the launch\\n- Prepare press release and media kit\\n- Schedule social media posts\",\n  \"tags\": [\"marketing\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/classify-note",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"classify-note"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auto-Organize Note",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status 200, 404, or 503', () => {",
+									"  pm.expect(pm.response.code).to.be.oneOf([200, 404, 503]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"  pm.test('Has organization result', () => {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.success).to.be.true;",
+									"    pm.expect(res.result).to.exist;",
+									"    pm.expect(res.result.autoOrganized).to.be.a('boolean');",
+									"    pm.expect(res.result.confidence).to.be.a('number');",
+									"    pm.expect(res.result.aiProjectsSuggested).to.be.an('array');",
+									"    pm.expect(res.result.aiTopicsSuggested).to.be.an('array');",
+									"    ",
+									"    if (res.result.autoOrganized) {",
+									"      pm.expect(res.result.applied).to.exist;",
+									"      pm.test('Applied changes', () => {",
+									"        pm.expect(res.result.applied.area).to.exist;",
+									"        pm.expect(res.result.applied.tags).to.be.an('array');",
+									"      });",
+									"    }",
+									"  });",
+									"}",
+									"",
+									"if (pm.response.code === 404) {",
+									"  pm.test('Card not found', () => {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.error).to.include('not found');",
+									"  });",
+									"}",
+									"",
+									"if (pm.response.code === 503) {",
+									"  pm.test('AI service unavailable', () => {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.error).to.include('unavailable');",
+									"  });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/ai/auto-organize/{{cardId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"auto-organize",
+								"{{cardId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update Card Checklist",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"checklist\": [\n    {\"text\": \"Review code changes\", \"checked\": true},\n    {\"text\": \"Write unit tests\", \"checked\": false},\n    {\"text\": \"Deploy to staging\", \"checked\": true}\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cards/{{cardId}}/checklist",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cards",
+						"{{cardId}}",
+						"checklist"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "areaId",
+			"value": ""
+		},
+		{
+			"key": "folderId",
+			"value": ""
+		},
+		{
+			"key": "projectId",
+			"value": ""
+		},
+		{
+			"key": "cardId",
+			"value": ""
+		}
+	]
 }

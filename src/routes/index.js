@@ -74,6 +74,8 @@ router.get('/dashboard/stats', authenticate, dashboardController.getStats);
 router.get('/sync', authenticate, syncController.sync);
 
 // AI
+// AI - thêm health check endpoint
+router.get('/ai/health', aiController.healthCheck);
 router.post('/ai/analyze-card', authenticate, aiController.analyzeCard);
 router.post('/ai/classify-note', authenticate, aiController.classifyNote);
 router.post('/ai/auto-organize/:cardId', authenticate, aiController.autoOrganizeNote);
