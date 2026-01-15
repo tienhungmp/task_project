@@ -64,10 +64,10 @@ class CardController {
     }
   }
 
-  async updateBlocks(req, res) {
+  async updateChecklist(req, res) {
     try {
-      const { blocks } = req.body;
-      const card = await cardService.updateBlocks(req.params.cardId, req.userId, blocks);
+      const { checklist } = req.body;
+      const card = await cardService.updateChecklist(req.params.cardId, req.userId, checklist);
       res.json(card);
     } catch (error) {
       res.status(400).json({ error: error.message });

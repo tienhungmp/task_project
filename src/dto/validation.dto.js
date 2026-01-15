@@ -23,48 +23,9 @@ const projectSchema = Joi.object({
 });
 
 const checklistItemSchema = Joi.object({
+  _id: Joi.string().optional(),
   text: Joi.string().required(),
   checked: Joi.boolean().default(false)
-});
-
-const blockSchemaValidation = Joi.object({
-  _id: Joi.string().optional(),
-  type: Joi.string().valid('text', 'checklist', 'table', 'media', 'link').required(),
-  order: Joi.number().required(),
-  // TEXT block
-  textContent: Joi.when('type', {
-    is: 'text',
-    then: Joi.string().required(),
-    otherwise: Joi.forbidden()
-  }),
-  // CHECKLIST block
-  checklistItems: Joi.when('type', {
-    is: 'checklist',
-    then: Joi.array().items(checklistItemSchema).min(1).required(),
-    otherwise: Joi.forbidden()
-  }),
-  // TABLE block
-  tableData: Joi.when('type', {
-    is: 'table',
-    then: Joi.array().items(Joi.array().items(Joi.string())).min(1).required(),
-    otherwise: Joi.forbidden()
-  }),
-  // MEDIA block
-  mediaUrl: Joi.when('type', {
-    is: 'media',
-    then: Joi.string().uri().required(),
-    otherwise: Joi.forbidden()
-  }),
-  mediaType: Joi.when('type', {
-    is: 'media',
-    then: Joi.string().valid('image', 'video', 'audio', 'file').required(),
-    otherwise: Joi.forbidden()
-  }),
-  mediaName: Joi.when('type', {
-    is: 'media',
-    then: Joi.string().required(),
-    otherwise: Joi.forbidden()
-  })
 });
 
 const cardSchema = Joi.object({
@@ -78,11 +39,14 @@ const cardSchema = Joi.object({
   energyLevel: Joi.string().valid('low', 'medium', 'high').optional(),
   dueDate: Joi.date().optional().allow(null),
   reminder: Joi.date().optional().allow(null),
-  blocks: Joi.array().items(blockSchemaValidation).optional()
+  // New simplified fields
+  link: Joi.string().uri().optional().allow(null),
+  imageUrl: Joi.string().uri().optional().allow(null),
+  checklist: Joi.array().items(checklistItemSchema).optional()
 });
 
-const blocksUpdateSchema = Joi.object({
-  blocks: Joi.array().items(blockSchemaValidation).required()
+const checklistUpdateSchema = Joi.object({
+  checklist: Joi.array().items(checklistItemSchema).required()
 });
 
 module.exports = {
@@ -90,5 +54,5 @@ module.exports = {
   folderSchema,
   projectSchema,
   cardSchema,
-  blocksUpdateSchema
+  checklistUpdateSchema
 };

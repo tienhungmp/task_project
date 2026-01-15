@@ -45,7 +45,7 @@ class CardService {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate('areaId', 'name color')
+        .populate('areaId', 'name color icon')
         .populate('folderId', 'name color icon')
         .lean(),
       Card.countDocuments(query)
@@ -118,10 +118,10 @@ class CardService {
     return card;
   }
 
-  async updateBlocks(id, userId, blocks) {
+  async updateChecklist(id, userId, checklist) {
     const card = await Card.findOneAndUpdate(
       { _id: id, userId, deletedAt: null },
-      { blocks },
+      { checklist },
       { new: true }
     );
 

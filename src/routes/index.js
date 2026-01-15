@@ -14,7 +14,7 @@ const validate = require('../middleware/validate');
 const upload = require('../middleware/upload');
 
 const { registerSchema, loginSchema, refreshTokenSchema, updateProfileSchema, changePasswordSchema } = require('../dto/auth.dto');
-const { areaSchema, folderSchema, projectSchema, cardSchema, blocksUpdateSchema } = require('../dto/validation.dto');
+const { areaSchema, folderSchema, projectSchema, cardSchema, checklistUpdateSchema } = require('../dto/validation.dto');
 
 // AUTH ROUTES
 router.post('/auth/register', upload.single('avatar'), validate(registerSchema), authController.register);
@@ -60,8 +60,8 @@ router.post('/cards/:id/move', authenticate, cardController.move);
 // Get cards by folder
 router.get('/folders/:folderId/cards', authenticate, cardController.getByFolder);
 
-// BLOCK ROUTES
-router.put('/cards/:cardId/blocks', authenticate, validate(blocksUpdateSchema), cardController.updateBlocks);
+// CHECKLIST ROUTES (replaced BLOCK routes)
+router.put('/cards/:cardId/checklist', authenticate, validate(checklistUpdateSchema), cardController.updateChecklist);
 
 // SEARCH
 router.get('/search', authenticate, searchController.search);

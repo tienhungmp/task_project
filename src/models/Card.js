@@ -12,58 +12,6 @@ const checklistItemSchema = new mongoose.Schema({
   }
 }, { _id: true });
 
-const blockSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: ['text', 'checklist', 'table', 'media'],
-    required: true
-  },
-  order: {
-    type: Number,
-    default: 0
-  },
-  // TEXT block fields
-  textContent: {
-    type: String,
-    default: null
-  },
-  // CHECKLIST block fields
-  checklistItems: {
-    type: [checklistItemSchema],
-    default: undefined
-  },
-  // TABLE block fields
-  tableData: {
-    type: [[String]], // 2D array of strings
-    default: undefined
-  },
-  // MEDIA block fields
-  mediaUrl: {
-    type: String,
-    default: null
-  },
-  mediaType: {
-    type: String,
-    enum: ['image', 'video', 'audio', 'file', 'link', null],
-    default: null
-  },
-  mediaName: {
-    type: String,
-    default: null
-  }
-}, { _id: true });
-
-// Virtual to compute checklist completion
-blockSchema.virtual('isCompleted').get(function() {
-  if (this.type !== 'checklist' || !this.checklistItems || this.checklistItems.length === 0) {
-    return false;
-  }
-  return this.checklistItems.every(item => item.checked);
-});
-
-blockSchema.set('toJSON', { virtuals: true });
-blockSchema.set('toObject', { virtuals: true });
-
 const cardSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -131,7 +79,19 @@ const cardSchema = new mongoose.Schema({
     default: false,
     index: true
   },
-  blocks: [blockSchema],
+  // New simplified fields
+  link: {
+    type: String,
+    default: null
+  },
+  imageUrl: {
+    type: String,
+    default: null
+  },
+  checklist: {
+    type: [checklistItemSchema],
+    default: []
+  },
   deletedAt: {
     type: Date,
     default: null
@@ -139,6 +99,23 @@ const cardSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Virtual to compute checklist completion
+cardSchema.virtual('checklistProgress').get(function() {
+  if (!this.checklist || this.checklist.length === 0) {
+    return { completed: 0, total: 0, percentage: 0 };
+  }
+  const completed = this.checklist.filter(item => item.checked).length;
+  const total = this.checklist.length;
+  return {
+    completed,
+    total,
+    percentage: Math.round((completed / total) * 100)
+  };
+});
+
+cardSchema.set('toJSON', { virtuals: true });
+cardSchema.set('toObject', { virtuals: true });
 
 cardSchema.index({ userId: 1, isArchived: 1, createdAt: -1 });
 cardSchema.index({ userId: 1, status: 1 });
