@@ -14,7 +14,7 @@ const validate = require('../middleware/validate');
 const upload = require('../middleware/upload');
 
 const { registerSchema, loginSchema, refreshTokenSchema, updateProfileSchema, changePasswordSchema } = require('../dto/auth.dto');
-const { areaSchema, folderSchema, projectSchema, cardSchema, checklistUpdateSchema } = require('../dto/validation.dto');
+const { areaSchema, folderSchema, projectSchema, cardSchema, checklistUpdateSchema, convertToTaskSchema, convertToNoteSchema } = require('../dto/validation.dto');
 
 // AUTH ROUTES
 router.post('/auth/register', upload.single('avatar'), validate(registerSchema), authController.register);
@@ -60,8 +60,12 @@ router.post('/cards/:id/move', authenticate, cardController.move);
 // Get cards by folder
 router.get('/folders/:folderId/cards', authenticate, cardController.getByFolder);
 
-// CHECKLIST ROUTES (replaced BLOCK routes)
+// CHECKLIST ROUTES
 router.put('/cards/:cardId/checklist', authenticate, validate(checklistUpdateSchema), cardController.updateChecklist);
+
+// CONVERT ROUTES - Chuyển đổi Note <-> Task
+router.post('/cards/:id/convert-to-task', authenticate, validate(convertToTaskSchema), cardController.convertToTask);
+router.post('/cards/:id/convert-to-note', authenticate, validate(convertToNoteSchema), cardController.convertToNote);
 
 // SEARCH
 router.get('/search', authenticate, searchController.search);
@@ -74,7 +78,6 @@ router.get('/dashboard/stats', authenticate, dashboardController.getStats);
 router.get('/sync', authenticate, syncController.sync);
 
 // AI
-// AI - thêm health check endpoint
 router.get('/ai/health', aiController.healthCheck);
 router.post('/ai/analyze-card', authenticate, aiController.analyzeCard);
 router.post('/ai/classify-note', authenticate, aiController.classifyNote);

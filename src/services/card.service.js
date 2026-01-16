@@ -163,6 +163,84 @@ class CardService {
       }
     };
   }
+
+  /**
+   * Chuyển Note thành Task
+   * - Set dueDate (required)
+   * - Có thể set projectId và status
+   * - Clear folderId nếu có projectId
+   */
+  async convertToTask(id, userId, dueDate, projectId = null, status = 'todo') {
+    const card = await Card.findOne({ _id: id, userId, deletedAt: null });
+    
+    if (!card) {
+      throw new Error('Card not found');
+    }
+
+    // Kiểm tra đã là task chưa
+    if (card.dueDate) {
+      throw new Error('Card is already a task');
+    }
+
+    const updates = {
+      dueDate: new Date(dueDate),
+      status: status || 'todo'
+    };
+
+    // Nếu có projectId, chuyển sang project và clear folderId
+    if (projectId) {
+      updates.projectId = projectId;
+      updates.folderId = null;
+    }
+
+    const updatedCard = await Card.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    return updatedCard;
+  }
+
+  /**
+   * Chuyển Task thành Note
+   * - Xóa dueDate
+   * - Xóa status về null hoặc giữ nguyên
+   * - Có thể set folderId
+   * - Clear projectId nếu có folderId
+   */
+  async convertToNote(id, userId, folderId = null) {
+    const card = await Card.findOne({ _id: id, userId, deletedAt: null });
+    
+    if (!card) {
+      throw new Error('Card not found');
+    }
+
+    // Kiểm tra đã là note chưa
+    if (!card.dueDate) {
+      throw new Error('Card is already a note');
+    }
+
+    const updates = {
+      dueDate: null,
+      reminder: null,  // Xóa reminder nếu có
+      status: 'todo'   // Reset status về mặc định
+    };
+
+    // Nếu có folderId, chuyển sang folder và clear projectId
+    if (folderId) {
+      updates.folderId = folderId;
+      updates.projectId = null;
+    }
+
+    const updatedCard = await Card.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    return updatedCard;
+  }
 }
 
 module.exports = new CardService();

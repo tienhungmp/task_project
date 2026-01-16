@@ -7,9 +7,9 @@ const projectSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  folderId: {
+  areaId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Folder',
+    ref: 'Area',
     required: true,
     index: true
   },
@@ -35,6 +35,6 @@ const projectSchema = new mongoose.Schema({
   timestamps: true
 });
 
-projectSchema.index({ userId: 1, folderId: 1 });
+projectSchema.index({ userId: 1, areaId: 1 });
 
 module.exports = mongoose.model('Project', projectSchema);

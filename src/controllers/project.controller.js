@@ -3,10 +3,10 @@ const projectService = require('../services/project.service');
 class ProjectController {
   async getAll(req, res) {
     try {
-      const { folderId, page = 1, limit = 20 } = req.query;
+      const { areaId, page = 1, limit = 20 } = req.query;
       const result = await projectService.getAll(
         req.userId,
-        folderId,
+        areaId,
         parseInt(page),
         parseInt(limit)
       );

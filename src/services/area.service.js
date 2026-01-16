@@ -18,17 +18,18 @@ class AreaService {
 
     const areasWithCounts = await Promise.all(
       areas.map(async (area) => {
-        const folderIds = await Folder
-          .find({ userId, areaId: area._id })
-          .distinct('_id');
-
         const [
           folderCount,
+          projectCount,
           taskCount,
-          noteCount,
-          projectCount
+          noteCount
         ] = await Promise.all([
           Folder.countDocuments({
+            userId,
+            areaId: area._id
+          }),
+
+          Project.countDocuments({
             userId,
             areaId: area._id
           }),
@@ -47,20 +48,15 @@ class AreaService {
             areaId: area._id,
             deletedAt: null,
             dueDate: null
-          }),
-
-          Project.countDocuments({
-            userId,
-            folderId: { $in: folderIds }
           })
         ]);
 
         return {
           ...area,
           folderCount,
+          projectCount,
           taskCount,
-          noteCount,
-          projectCount
+          noteCount
         };
       })
     );
@@ -75,7 +71,6 @@ class AreaService {
     };
   }
 
-
   async getById(id, userId) {
     const area = await Area.findOne({ _id: id, userId }).lean();
     if (!area) {
@@ -85,7 +80,6 @@ class AreaService {
   }
 
   async create(userId, data) {
-    // Validate required fields
     if (!data.color && data.color !== 0) {
       throw new Error('Color is required');
     }

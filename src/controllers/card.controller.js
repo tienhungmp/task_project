@@ -88,6 +88,56 @@ class CardController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  /**
+   * POST /api/cards/:id/convert-to-task
+   * Chuyển note thành task bằng cách set dueDate
+   * Body: { dueDate: Date, projectId?: ObjectId, status?: string }
+   */
+  async convertToTask(req, res) {
+    try {
+      const { dueDate, projectId, status } = req.body;
+      
+      if (!dueDate) {
+        return res.status(400).json({ 
+          error: 'dueDate is required to convert note to task' 
+        });
+      }
+
+      const card = await cardService.convertToTask(
+        req.params.id, 
+        req.userId, 
+        dueDate,
+        projectId,
+        status
+      );
+      
+      res.json(card);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  /**
+   * POST /api/cards/:id/convert-to-note
+   * Chuyển task thành note bằng cách xóa dueDate
+   * Body: { folderId?: ObjectId }
+   */
+  async convertToNote(req, res) {
+    try {
+      const { folderId } = req.body;
+
+      const card = await cardService.convertToNote(
+        req.params.id, 
+        req.userId,
+        folderId
+      );
+      
+      res.json(card);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new CardController();

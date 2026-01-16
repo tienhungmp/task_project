@@ -1,11 +1,11 @@
 const Project = require('../models/Project');
 
 class ProjectService {
-  async getAll(userId, folderId, page = 1, limit = 20) {
+  async getAll(userId, areaId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
     const query = { userId };
     
-    if (folderId) query.folderId = folderId;
+    if (areaId) query.areaId = areaId;
 
     const [projects, total] = await Promise.all([
       Project.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),

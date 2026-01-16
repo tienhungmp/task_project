@@ -1,6 +1,5 @@
 const Folder = require('../models/Folder');
 const Card = require('../models/Card');
-const Project = require('../models/Project');
 
 class FolderService {
   async getAll(userId, filters = {}) {
@@ -16,22 +15,15 @@ class FolderService {
     // Get counts for each folder
     const foldersWithCounts = await Promise.all(
       folders.map(async (folder) => {
-        const [noteCount, projectCount] = await Promise.all([
-          Card.countDocuments({ 
-            userId, 
-            folderId: folder._id, 
-            deletedAt: null 
-          }),
-          Project.countDocuments({ 
-            userId, 
-            folderId: folder._id 
-          })
-        ]);
+        const noteCount = await Card.countDocuments({ 
+          userId, 
+          folderId: folder._id, 
+          deletedAt: null 
+        });
         
         return {
           ...folder,
-          noteCount,
-          projectCount
+          noteCount
         };
       })
     );

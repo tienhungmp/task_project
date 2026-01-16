@@ -6,6 +6,7 @@ const areaSchema = Joi.object({
   color: Joi.number().integer().required(),
   icon: Joi.number().integer().required()
 });
+
 const folderSchema = Joi.object({
   areaId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
   parentId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().allow(null),
@@ -17,7 +18,7 @@ const folderSchema = Joi.object({
 });
 
 const projectSchema = Joi.object({
-  folderId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+  areaId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
   name: Joi.string().min(1).required(),
   hideCompleted: Joi.boolean().optional(),
   energyLevel: Joi.string().valid('low', 'medium', 'high').optional(),
@@ -41,7 +42,6 @@ const cardSchema = Joi.object({
   energyLevel: Joi.string().valid('low', 'medium', 'high').optional(),
   dueDate: Joi.date().optional().allow(null),
   reminder: Joi.date().optional().allow(null),
-  // New simplified fields
   link: Joi.string().uri().optional().allow(null),
   imageUrl: Joi.string().uri().optional().allow(null),
   checklist: Joi.array().items(checklistItemSchema).optional()
@@ -51,10 +51,22 @@ const checklistUpdateSchema = Joi.object({
   checklist: Joi.array().items(checklistItemSchema).required()
 });
 
+const convertToTaskSchema = Joi.object({
+  dueDate: Joi.date().required(),
+  projectId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().allow(null),
+  status: Joi.string().valid('todo', 'doing', 'done').optional()
+});
+
+const convertToNoteSchema = Joi.object({
+  folderId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().allow(null)
+});
+
 module.exports = {
   areaSchema,
   folderSchema,
   projectSchema,
   cardSchema,
-  checklistUpdateSchema
+  checklistUpdateSchema,
+  convertToTaskSchema,
+  convertToNoteSchema
 };
