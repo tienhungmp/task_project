@@ -602,7 +602,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"name\": \"Q1 Planning\",\n  \"energyLevel\": \"high\",\n  \"hideCompleted\": false\n}"
+              "raw": "{\n  \"areaId\": \"{{areaId}}\",\n  \"name\": \"Q1 Planning\",\n  \"description\": \"Planning for Q1 2026\",\n  \"color\": 3,\n  \"icon\": 7,\n  \"startDate\": \"2026-01-01T00:00:00Z\",\n  \"endDate\": \"2026-03-31T23:59:59Z\",\n  \"energyLevel\": \"high\",\n  \"hideCompleted\": false,\n  \"calendarSync\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/projects",
@@ -613,7 +613,29 @@
           "response": []
         },
         {
-          "name": "Get Projects by Areas",
+          "name": "Get Project by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has project stats', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res._id).to.exist;",
+                  "  pm.expect(res.totalTasks).to.exist;",
+                  "  pm.expect(res.completedTasks).to.exist;",
+                  "  pm.expect(res.todoTasks).to.exist;",
+                  "  pm.expect(res.doingTasks).to.exist;",
+                  "  pm.expect(res.completionRate).to.exist;",
+                  "  pm.expect(res.isOverdue).to.be.a('boolean');",
+                  "  pm.expect(res.duration).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -623,26 +645,68 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/projects?areaId={{areaId}}&page=1&limit=20",
+              "raw": "{{baseUrl}}/projects/{{projectId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["projects"],
-              "query": [
-                {
-                  "key": "areaId",
-                  "value": "{{areaId}}"
-                },
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                }
-              ]
+              "path": ["projects", "{{projectId}}"]
             }
-          },
-          "response": []
+          }
+        },
+        {
+          "name": "Get Projects by Areas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has projects with stats', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.projects).to.be.an('array');",
+                  "  pm.expect(res.pagination).to.exist;",
+                  "  ",
+                  "  if (res.projects.length > 0) {",
+                  "    const project = res.projects[0];",
+                  "    pm.expect(project.totalTasks).to.exist;",
+                  "    pm.expect(project.completedTasks).to.exist;",
+                  "    pm.expect(project.completionRate).to.exist;",
+                  "    pm.expect(project.isOverdue).to.be.a('boolean');",
+                  "    pm.expect(project.color).to.exist;",
+                  "    pm.expect(project.icon).to.exist;",
+                  "  }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}"]
+            }
+          }
         }
       ]
     },

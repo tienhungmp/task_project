@@ -20,6 +20,11 @@ const folderSchema = Joi.object({
 const projectSchema = Joi.object({
   areaId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
   name: Joi.string().min(1).required(),
+  description: Joi.string().allow('').optional(),
+  color: Joi.number().integer().required(),
+  icon: Joi.number().integer().required(),
+  startDate: Joi.date().optional().allow(null),
+  endDate: Joi.date().optional().allow(null).min(Joi.ref('startDate')),
   hideCompleted: Joi.boolean().optional(),
   energyLevel: Joi.string().valid('low', 'medium', 'high').optional(),
   calendarSync: Joi.boolean().optional()
