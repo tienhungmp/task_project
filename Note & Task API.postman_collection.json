@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "6156ef9f-43aa-48b3-befd-544471ca86a0",
+    "_postman_id": "73271cd9-9092-40cc-a8bd-23a242963355",
     "name": "Note & Task API",
     "description": "Complete API testing for Mobile Note & Task Management",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "22665569",
-    "_collection_link": "https://interstellar-zodiac-465988.postman.co/workspace/homestay~7892e020-3060-4c0e-8655-23a1bf9e184c/collection/22665569-6156ef9f-43aa-48b3-befd-544471ca86a0?action=share&source=collection_link&creator=22665569"
+    "_collection_link": "https://go.postman.co/collection/22665569-73271cd9-9092-40cc-a8bd-23a242963355?source=collection_link"
   },
   "item": [
     {
@@ -28,7 +28,9 @@
                   "  pm.expect(res.refreshToken).to.exist;",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -40,7 +42,7 @@
               "formdata": [
                 {
                   "key": "email",
-                  "value": "test@example.com",
+                  "value": "test1@example.com",
                   "type": "text"
                 },
                 {
@@ -56,14 +58,19 @@
                 {
                   "key": "avatar",
                   "type": "file",
-                  "src": []
+                  "src": "/C:/Users/ADMIN/Downloads/photo_2026-01-06_10-03-11.jpg"
                 }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
@@ -80,7 +87,9 @@
                   "pm.collectionVariables.set('refreshToken', res.refreshToken);",
                   "pm.test('Status 200', () => pm.response.to.have.status(200));"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -98,8 +107,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           },
           "response": []
@@ -133,8 +147,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "refresh"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
             }
           },
           "response": []
@@ -172,8 +191,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/user/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "profile"
+              ]
             }
           },
           "response": []
@@ -191,7 +215,9 @@
                   "  pm.expect(res.name).to.equal('Updated User');",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -208,13 +234,31 @@
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated User\",\n  \"email\": \"updated@example.com\"\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "hung",
+                  "type": "text",
+                  "uuid": "3a5d866f-d402-43f6-886a-6eb7401ecf96"
+                },
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "uuid": "f03d71e5-3bb8-4bbc-bcbb-678163ed4be1",
+                  "src": "/C:/Users/ADMIN/Downloads/photo_2026-01-06_10-03-11.jpg"
+                }
+              ]
             },
             "url": {
               "raw": "{{baseUrl}}/user/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "profile"
+              ]
             }
           },
           "response": []
@@ -232,7 +276,9 @@
                   "  pm.expect(res.avatarUrl).to.exist;",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -250,14 +296,19 @@
                 {
                   "key": "avatar",
                   "type": "file",
-                  "src": []
+                  "src": "/C:/Users/ADMIN/Downloads/Untitled Diagram.drawio (7).png"
                 }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/user/avatar",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "avatar"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "avatar"
+              ]
             }
           },
           "response": []
@@ -297,8 +348,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/user/password",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "password"
+              ]
             }
           },
           "response": []
@@ -343,8 +399,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/areas",
-              "host": ["{{baseUrl}}"],
-              "path": ["areas"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "areas"
+              ]
             }
           },
           "response": []
@@ -376,8 +436,12 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/areas?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["areas"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "areas"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -412,8 +476,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/areas/{{areaId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["areas", "{{areaId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "areas",
+                "{{areaId}}"
+              ]
             }
           },
           "response": []
@@ -458,8 +527,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "folders"
+              ]
             }
           },
           "response": []
@@ -484,8 +557,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "folders"
+              ]
             }
           },
           "response": []
@@ -510,8 +587,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders/{{folderId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders", "{{folderId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "folders",
+                "{{folderId}}"
+              ]
             }
           },
           "response": []
@@ -528,8 +610,12 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/folders?areaId={{areaId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "folders"
+              ],
               "query": [
                 {
                   "key": "areaId",
@@ -560,8 +646,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders/{{folderId}}/access",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders", "{{folderId}}", "access"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "folders",
+                "{{folderId}}",
+                "access"
+              ]
             }
           },
           "response": []
@@ -606,8 +698,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/projects",
-              "host": ["{{baseUrl}}"],
-              "path": ["projects"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects"
+              ]
             }
           },
           "response": []
@@ -646,10 +742,16 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/projects/{{projectId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["projects", "{{projectId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}"
+              ]
             }
-          }
+          },
+          "response": []
         },
         {
           "name": "Get Projects by Areas",
@@ -675,10 +777,37 @@
                   "  }",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects?areaId={{areaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "areaId",
+                  "value": "{{areaId}}"
+                }
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "Delete Project",
@@ -703,10 +832,16 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/projects/{{projectId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["projects", "{{projectId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}"
+              ]
             }
-          }
+          },
+          "response": []
         }
       ]
     },
@@ -746,8 +881,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards"
+              ]
             }
           },
           "response": []
@@ -772,8 +911,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards"
+              ]
             }
           },
           "response": []
@@ -790,8 +933,12 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/cards?projectId={{projectId}}&status=todo&page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards"
+              ],
               "query": [
                 {
                   "key": "projectId",
@@ -842,8 +989,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/folders/{{folderId}}/cards?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["folders", "{{folderId}}", "cards"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "folders",
+                "{{folderId}}",
+                "cards"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -878,8 +1031,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards",
+                "{{cardId}}"
+              ]
             }
           },
           "response": []
@@ -904,8 +1062,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/checklist",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}", "checklist"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards",
+                "{{cardId}}",
+                "checklist"
+              ]
             }
           },
           "response": []
@@ -930,8 +1094,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/move",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}", "move"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards",
+                "{{cardId}}",
+                "move"
+              ]
             }
           },
           "response": []
@@ -948,8 +1118,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards",
+                "{{cardId}}"
+              ]
             }
           },
           "response": []
@@ -974,10 +1149,17 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/convert-to-task",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}", "convert-to-task"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards",
+                "{{cardId}}",
+                "convert-to-task"
+              ]
             }
-          }
+          },
+          "response": []
         },
         {
           "name": "Convert Task to Note",
@@ -999,10 +1181,17 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/convert-to-note",
-              "host": ["{{baseUrl}}"],
-              "path": ["cards", "{{cardId}}", "convert-to-note"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cards",
+                "{{cardId}}",
+                "convert-to-note"
+              ]
             }
-          }
+          },
+          "response": []
         }
       ]
     },
@@ -1021,8 +1210,12 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/search?q=documentation&tags[]=urgent&tags[]=work&dateFrom=2026-01-01",
-              "host": ["{{baseUrl}}"],
-              "path": ["search"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
               "query": [
                 {
                   "key": "q",
@@ -1062,8 +1255,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/dashboard/energy-overview",
-              "host": ["{{baseUrl}}"],
-              "path": ["dashboard", "energy-overview"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "energy-overview"
+              ]
             }
           },
           "response": []
@@ -1080,8 +1278,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/dashboard/stats?period=week",
-              "host": ["{{baseUrl}}"],
-              "path": ["dashboard", "stats"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "stats"
+              ],
               "query": [
                 {
                   "key": "period",
@@ -1104,8 +1307,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/dashboard/stats?period=month",
-              "host": ["{{baseUrl}}"],
-              "path": ["dashboard", "stats"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "stats"
+              ],
               "query": [
                 {
                   "key": "period",
@@ -1133,8 +1341,12 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/sync?lastSync=2026-01-01T00:00:00Z",
-              "host": ["{{baseUrl}}"],
-              "path": ["sync"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sync"
+              ],
               "query": [
                 {
                   "key": "lastSync",
@@ -1175,8 +1387,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ai/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["ai", "health"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "health"
+              ]
             }
           },
           "response": []
@@ -1236,8 +1453,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ai/analyze-card",
-              "host": ["{{baseUrl}}"],
-              "path": ["ai", "analyze-card"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "analyze-card"
+              ]
             }
           },
           "response": []
@@ -1298,8 +1520,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ai/classify-note",
-              "host": ["{{baseUrl}}"],
-              "path": ["ai", "classify-note"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "classify-note"
+              ]
             }
           },
           "response": []
@@ -1363,8 +1590,80 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/ai/auto-organize/{{cardId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["ai", "auto-organize", "{{cardId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "auto-organize",
+                "{{cardId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Suggest-project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"projectDescription\": \"Xây dựng website bán hàng cho shop quần áo. Cần trang chủ, sản phẩm, giỏ hàng, thanh toán.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/suggest-project",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "suggest-project"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CreateProject",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n        \"areaId\": \"69690f37f6060f6aefb2dd06\",\r\n         \"project\": {\r\n            \"name\": \"Website Bán Hàng\",\r\n            \"description\": \"Xây dựng website bán hàng cho shop quần áo với các chức năng như trang chủ, sản phẩm, giỏ hàng và thanh toán.\",\r\n            \"color\": 5,\r\n            \"icon\": 10,\r\n            \"energyLevel\": \"medium\",\r\n            \"estimatedDurationDays\": 30,\r\n            \"priority\": \"High\",\r\n            \"suggestedArea\": \"Công việc\"\r\n        },\r\n        \"tasks\": [\r\n            {\r\n                \"taskText\": \"Nghiên cứu yêu cầu và tính năng cần thiết\",\r\n                \"estimatedTimeMinutes\": 120,\r\n                \"priority\": \"High\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"medium\",\r\n                \"suggestedTopic\": \"Nghiên cứu\",\r\n                \"order\": 1\r\n            },\r\n            {\r\n                \"taskText\": \"Thiết kế giao diện trang chủ cho website\",\r\n                \"estimatedTimeMinutes\": 180,\r\n                \"priority\": \"High\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"medium\",\r\n                \"suggestedTopic\": \"Thiết kế\",\r\n                \"order\": 2\r\n            },\r\n            {\r\n                \"taskText\": \"Phát triển chức năng hiển thị sản phẩm\",\r\n                \"estimatedTimeMinutes\": 240,\r\n                \"priority\": \"High\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"high\",\r\n                \"suggestedTopic\": \"Lập trình\",\r\n                \"order\": 3\r\n            },\r\n            {\r\n                \"taskText\": \"Tạo giỏ hàng cho người dùng thêm sản phẩm\",\r\n                \"estimatedTimeMinutes\": 180,\r\n                \"priority\": \"High\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"high\",\r\n                \"suggestedTopic\": \"Lập trình\",\r\n                \"order\": 4\r\n            },\r\n            {\r\n                \"taskText\": \"Xây dựng chức năng thanh toán an toàn\",\r\n                \"estimatedTimeMinutes\": 240,\r\n                \"priority\": \"High\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"high\",\r\n                \"suggestedTopic\": \"Lập trình\",\r\n                \"order\": 5\r\n            },\r\n            {\r\n                \"taskText\": \"Kiểm tra và sửa lỗi cho website\",\r\n                \"estimatedTimeMinutes\": 180,\r\n                \"priority\": \"High\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"medium\",\r\n                \"suggestedTopic\": \"Kiểm tra\",\r\n                \"order\": 6\r\n            },\r\n            {\r\n                \"taskText\": \"Tối ưu hóa hiệu suất website cho người dùng\",\r\n                \"estimatedTimeMinutes\": 120,\r\n                \"priority\": \"Medium\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"medium\",\r\n                \"suggestedTopic\": \"Tối ưu hóa\",\r\n                \"order\": 7\r\n            },\r\n            {\r\n                \"taskText\": \"Triển khai website lên máy chủ thực tế\",\r\n                \"estimatedTimeMinutes\": 90,\r\n                \"priority\": \"High\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"medium\",\r\n                \"suggestedTopic\": \"Triển khai\",\r\n                \"order\": 8\r\n            },\r\n            {\r\n                \"taskText\": \"Tạo tài liệu hướng dẫn sử dụng cho người dùng\",\r\n                \"estimatedTimeMinutes\": 120,\r\n                \"priority\": \"Medium\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"medium\",\r\n                \"suggestedTopic\": \"Tài liệu\",\r\n                \"order\": 9\r\n            },\r\n            {\r\n                \"taskText\": \"Thực hiện quảng bá website đến khách hàng\",\r\n                \"estimatedTimeMinutes\": 150,\r\n                \"priority\": \"Medium\",\r\n                \"status\": \"todo\",\r\n                \"energyLevel\": \"medium\",\r\n                \"suggestedTopic\": \"Marketing\",\r\n                \"order\": 10\r\n            }\r\n        ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/create-project",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "create-project"
+              ]
             }
           },
           "response": []
