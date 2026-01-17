@@ -83,6 +83,9 @@ router.post('/ai/analyze-card', authenticate, aiController.analyzeCard);
 router.post('/ai/classify-note', authenticate, aiController.classifyNote);
 router.post('/ai/auto-organize/:cardId', authenticate, aiController.autoOrganizeNote);
 
+// NEW: Quick Note - Tạo note nhanh từ text
+router.post('/ai/quick-note', authenticate, aiController.quickNote);
+
 // NEW: Smart Organize - Phân loại thông minh dựa trên folders/areas có sẵn
 router.post('/ai/smart-organize/:cardId', authenticate, aiController.smartOrganize);
 

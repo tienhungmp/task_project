@@ -193,6 +193,48 @@ class AIController {
   }
 
   /**
+   * POST /api/ai/quick-note
+   * Tạo note nhanh từ text: AI tự động phân tích, tạo note, 
+   * chọn/tạo area và folder phù hợp, đặt tags
+   * Body: { text: string }
+   */
+  async quickNote(req, res) {
+    try {
+      const { text } = req.body;
+
+      if (!text || text.trim().length < 10) {
+        return res.status(400).json({ 
+          error: 'Text is required (minimum 10 characters)' 
+        });
+      }
+
+      const result = await aiService.createQuickNote(req.userId, text);
+      
+      res.status(201).json({
+        success: true,
+        note: result.note,
+        area: result.area,
+        folder: result.folder,
+        metadata: result.metadata
+      });
+    } catch (error) {
+      console.error('quickNote error:', error);
+
+      if (error.message.includes('AI service is unavailable')) {
+        return res.status(503).json({ 
+          error: 'AI service is currently unavailable',
+          detail: 'Please ensure the AI backend is running on port 8000'
+        });
+      }
+
+      res.status(500).json({ 
+        error: error.message,
+        detail: 'Failed to create quick note'
+      });
+    }
+  }
+
+  /**
    * POST /api/ai/smart-organize/:cardId
    * Phân loại thông minh: Gợi ý chủ đề, lĩnh vực dựa trên nội dung
    * Tự động đặt tags, chọn area, chuyển vào folder phù hợp

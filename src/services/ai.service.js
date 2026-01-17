@@ -296,6 +296,211 @@ class AIService {
   }
 
   /**
+   * NEW: Quick Note - Tạo note nhanh từ text
+   * Tự động:
+   * 1. Phân tích text bằng AI
+   * 2. Tạo note với title và content
+   * 3. Tìm hoặc tạo Area phù hợp
+   * 4. Tìm hoặc tạo Folder phù hợp
+   * 5. Đặt tags tự động
+   * 6. Lưu vào DB
+   */
+  async createQuickNote(userId, text) {
+    try {
+      // 1. Gọi AI để phân tích text
+      const aiResponse = await this.callAIBackend(text, userId);
+      const tasks = aiResponse.tasks || [];
+      const metadata = aiResponse.metadata || {};
+
+      if (tasks.length === 0) {
+        // Fallback: Tạo note đơn giản
+        const defaultArea = await this._getOrCreateDefaultArea(userId);
+        const defaultFolder = await this._getOrCreateDefaultFolder(userId, defaultArea._id);
+
+        const note = new Card({
+          userId,
+          areaId: defaultArea._id,
+          folderId: defaultFolder._id,
+          title: text.substring(0, 100), // First 100 chars as title
+          content: text,
+          tags: ['General'],
+          status: 'todo',
+          energyLevel: 'medium'
+        });
+
+        await note.save();
+
+        return {
+          note: note.toJSON(),
+          area: defaultArea,
+          folder: defaultFolder,
+          metadata: {
+            aiAnalyzed: false,
+            reason: 'No tasks detected - created simple note',
+            tasksExtracted: 0
+          }
+        };
+      }
+
+      // 2. Extract AI suggestions
+      const aiProjects = metadata.projects_discovered || [];
+      const aiTopics = metadata.topics_discovered || [];
+
+      // 3. Tạo title từ task đầu tiên hoặc text
+      const title = tasks[0]?.task_text || text.substring(0, 100);
+
+      // 4. Tạo content từ tất cả tasks
+      let content = text;
+      if (tasks.length > 1) {
+        const taskList = tasks.map((t, i) => `${i + 1}. ${t.task_text}`).join('\n');
+        content = `${text}\n\n--- Tasks detected by AI ---\n${taskList}`;
+      }
+
+      // 5. Lấy tất cả areas và folders hiện có
+      const [userAreas, userFolders] = await Promise.all([
+        Area.find({ userId }).lean(),
+        Folder.find({ userId }).lean()
+      ]);
+
+      // 6. Tìm HOẶC TẠO area phù hợp
+      let targetArea = this._findBestMatchingArea(aiProjects, aiTopics, userAreas);
+      let areaCreated = false;
+
+      if (!targetArea) {
+        const areaName = aiProjects[0] || aiTopics[0] || 'General';
+        const newArea = new Area({
+          userId,
+          name: areaName,
+          description: `Auto-created for: ${areaName}`,
+          color: this._generateRandomColor(),
+          icon: this._generateRandomIcon()
+        });
+        await newArea.save();
+        targetArea = newArea.toObject();
+        areaCreated = true;
+      }
+
+      // 7. Tìm HOẶC TẠO folder phù hợp
+      let targetFolder = this._findBestMatchingFolder(aiProjects, aiTopics, userFolders, targetArea._id);
+      let folderCreated = false;
+
+      if (!targetFolder) {
+        const folderName = aiTopics[0] || aiProjects[0] || 'Notes';
+        const newFolder = new Folder({
+          userId,
+          areaId: targetArea._id,
+          name: folderName,
+          description: `Auto-created for: ${folderName}`,
+          color: this._generateRandomColor(),
+          icon: this._generateRandomIcon()
+        });
+        await newFolder.save();
+        targetFolder = newFolder.toObject();
+        folderCreated = true;
+      }
+
+      // 8. Tạo tags từ topics
+      const tags = [...new Set(aiTopics)].slice(0, 5);
+
+      // 9. Xác định energy level từ priority
+      const priorityCounts = this._countFrequency(tasks.map(t => t.priority));
+      const dominantPriority = this._getMostCommon(priorityCounts) || 'Medium';
+      const energyLevel = dominantPriority === 'High' ? 'high' 
+                        : dominantPriority === 'Low' ? 'low' 
+                        : 'medium';
+
+      // 10. Tạo note trong DB
+      const note = new Card({
+        userId,
+        areaId: targetArea._id,
+        folderId: targetFolder._id,
+        title,
+        content,
+        tags,
+        status: 'todo',
+        energyLevel
+      });
+
+      await note.save();
+
+      // 11. Return kết quả
+      return {
+        note: note.toJSON(),
+        area: {
+          _id: targetArea._id,
+          name: targetArea.name,
+          color: targetArea.color,
+          icon: targetArea.icon,
+          isNew: areaCreated
+        },
+        folder: {
+          _id: targetFolder._id,
+          name: targetFolder.name,
+          color: targetFolder.color,
+          icon: targetFolder.icon,
+          isNew: folderCreated
+        },
+        metadata: {
+          aiAnalyzed: true,
+          tasksExtracted: tasks.length,
+          topicsDetected: aiTopics,
+          projectsDetected: aiProjects,
+          areaCreated,
+          folderCreated,
+          confidence: tasks.length > 0 ? 0.8 : 0.5,
+          tokensUsed: metadata.tokens_used,
+          processingTime: aiResponse.processing_time_ms
+        }
+      };
+
+    } catch (error) {
+      console.error('createQuickNote error:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Lấy hoặc tạo default area
+   */
+  async _getOrCreateDefaultArea(userId) {
+    let area = await Area.findOne({ userId, name: 'General' });
+    
+    if (!area) {
+      area = new Area({
+        userId,
+        name: 'General',
+        description: 'Default area for uncategorized notes',
+        color: 0,
+        icon: 0
+      });
+      await area.save();
+    }
+
+    return area.toObject();
+  }
+
+  /**
+   * Lấy hoặc tạo default folder
+   */
+  async _getOrCreateDefaultFolder(userId, areaId) {
+    let folder = await Folder.findOne({ userId, areaId, name: 'Notes' });
+    
+    if (!folder) {
+      folder = new Folder({
+        userId,
+        areaId,
+        name: 'Notes',
+        description: 'Default folder for notes',
+        color: 0,
+        icon: 0
+      });
+      await folder.save();
+    }
+
+    return folder.toObject();
+  }
+
+  /**
    * NEW: Smart Organize - Phân loại thông minh note
    * Tự động:
    * 1. Phân tích nội dung
