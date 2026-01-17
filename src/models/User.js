@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  bio: {
+    type: String,
+    default: '',
+    trim: true,
+    maxlength: 500
+  },
   avatarUrl: {
     type: String,
     required: true

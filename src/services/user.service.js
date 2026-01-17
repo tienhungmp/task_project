@@ -10,7 +10,7 @@ class UserService {
   }
 
   async updateProfile(userId, data) {
-    const { name, email } = data;
+    const { name, email, bio } = data;
     
     // Check if email already exists for another user
     if (email) {
@@ -20,9 +20,14 @@ class UserService {
       }
     }
 
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (bio !== undefined) updateData.bio = bio;
+
     const user = await User.findByIdAndUpdate(
       userId,
-      { name, email },
+      updateData,
       { new: true, runValidators: true }
     ).select('-password -refreshToken');
 

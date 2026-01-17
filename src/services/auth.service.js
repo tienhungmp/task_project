@@ -2,13 +2,13 @@ const User = require('../models/User');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 
 class AuthService {
-  async register(email, password, name, avatarUrl) {
+  async register(email, password, name, avatarUrl, bio = '') {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new Error('Email already registered');
     }
 
-    const user = new User({ email, password, name, avatarUrl });
+    const user = new User({ email, password, name, avatarUrl, bio });
     await user.save();
 
     const accessToken = generateAccessToken(user._id);
