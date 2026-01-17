@@ -1,35 +1,42 @@
 const Card = require('../models/Card');
 
 class CardService {
-  async getAll(userId, filters = {}, page = 1, limit = 20) {
-    const skip = (page - 1) * limit;
-    const query = { userId, deletedAt: null };
+async getAll(userId, filters = {}, page = 1, limit = 20) {
+  const skip = (page - 1) * limit;
+  const query = { userId, deletedAt: null };
 
-    if (filters.projectId) query.projectId = filters.projectId;
-    if (filters.folderId) query.folderId = filters.folderId;
-    if (filters.areaId) query.areaId = filters.areaId;
-    if (filters.status) query.status = filters.status;
-    if (filters.isArchived !== undefined) query.isArchived = filters.isArchived === 'true';
+  if (filters.projectId) query.projectId = filters.projectId;
+  if (filters.folderId) query.folderId = filters.folderId;
+  if (filters.areaId) query.areaId = filters.areaId;
+  if (filters.status) query.status = filters.status;
+  if (filters.isArchived !== undefined) query.isArchived = filters.isArchived === 'true';
 
-    if (filters.search) {
-      query.$text = { $search: filters.search };
-    }
-
-    const [cards, total] = await Promise.all([
-      Card.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Card.countDocuments(query)
-    ]);
-
-    return {
-      cards,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
+  if (filters.search) {
+    query.$text = { $search: filters.search };
   }
+
+  const [cards, total] = await Promise.all([
+    Card.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('areaId', 'name color icon')
+      .populate('folderId', 'name color icon')
+      .populate('projectId', 'name color icon')
+      .lean(),
+    Card.countDocuments(query)
+  ]);
+
+  return {
+    cards,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+}
 
   async getByFolder(userId, folderId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
