@@ -83,8 +83,11 @@ router.post('/ai/analyze-card', authenticate, aiController.analyzeCard);
 router.post('/ai/classify-note', authenticate, aiController.classifyNote);
 router.post('/ai/auto-organize/:cardId', authenticate, aiController.autoOrganizeNote);
 
+// NEW: Smart Organize - Phân loại thông minh dựa trên folders/areas có sẵn
+router.post('/ai/smart-organize/:cardId', authenticate, aiController.smartOrganize);
+
 // AI Project Creation - 2 bước
-router.post('/ai/suggest-project', authenticate, aiController.suggestProject);
-router.post('/ai/create-project', authenticate, aiController.createProjectFromSuggestions);
+router.post('/ai/suggest-project', authenticate, aiController.suggestProject); // Bước 1: Lấy đề xuất từ AI
+router.post('/ai/create-project', authenticate, aiController.createProjectFromSuggestions); // Bước 2: Tạo thật vào DB
 
 module.exports = router;

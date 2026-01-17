@@ -296,7 +296,162 @@ class AIService {
   }
 
   /**
-   * NEW: Gọi AI để đề xuất project (CHƯA TẠO trong DB)
+   * NEW: Smart Organize - Phân loại thông minh note
+   * Tự động:
+   * 1. Phân tích nội dung
+   * 2. Gợi ý chủ đề/lĩnh vực dựa trên các folders/areas có sẵn
+   * 3. Đặt tags phù hợp
+   * 4. Chuyển vào folder đúng chủ đề
+   * 5. Set area phù hợp
+   */
+  async smartOrganizeNote(userId, cardId, autoApply = false) {
+    try {
+      // 1. Lấy card
+      const card = await Card.findOne({ _id: cardId, userId, deletedAt: null });
+      if (!card) {
+        throw new Error('Card not found');
+      }
+
+      // 2. Lấy tất cả areas và folders của user
+      const [userAreas, userFolders] = await Promise.all([
+        Area.find({ userId }).lean(),
+        Folder.find({ userId }).lean()
+      ]);
+
+      // 3. Gọi AI để phân tích
+      const textToAnalyze = `${card.title}\n\n${card.content}`.trim();
+      const aiResponse = await this.callAIBackend(textToAnalyze, userId);
+      const tasks = aiResponse.tasks || [];
+      const metadata = aiResponse.metadata || {};
+
+      if (tasks.length === 0) {
+        return {
+          organized: false,
+          reason: 'No meaningful content detected',
+          suggestions: {
+            tags: card.tags,
+            area: null,
+            folder: null
+          },
+          confidence: 0.3
+        };
+      }
+
+      // 4. Extract AI suggestions
+      const aiProjects = metadata.projects_discovered || [];
+      const aiTopics = metadata.topics_discovered || [];
+
+      // 5. Tìm area và folder phù hợp nhất
+      const suggestedArea = this._findBestMatchingArea(aiProjects, aiTopics, userAreas);
+      const suggestedFolder = suggestedArea 
+        ? this._findBestMatchingFolder(aiProjects, aiTopics, userFolders, suggestedArea._id)
+        : null;
+
+      // 6. Tạo tags từ topics
+      const suggestedTags = [...new Set([...card.tags, ...aiTopics])].slice(0, 5);
+
+      // 7. Tính confidence
+      const priorityCounts = this._countFrequency(tasks.map(t => t.priority));
+      const dominantPriority = this._getMostCommon(priorityCounts);
+      const priorityConsistency = priorityCounts[dominantPriority] / tasks.length;
+      const confidence = Math.min(0.95, 0.5 + (priorityConsistency * 0.3) + (tasks.length * 0.05));
+
+      // 8. Chuẩn bị suggestions
+      const suggestions = {
+        area: suggestedArea ? {
+          _id: suggestedArea._id,
+          name: suggestedArea.name,
+          color: suggestedArea.color,
+          icon: suggestedArea.icon,
+          matchReason: this._explainMatch(aiProjects, aiTopics, suggestedArea.name)
+        } : null,
+        
+        folder: suggestedFolder ? {
+          _id: suggestedFolder._id,
+          name: suggestedFolder.name,
+          color: suggestedFolder.color,
+          icon: suggestedFolder.icon,
+          areaId: suggestedFolder.areaId,
+          matchReason: this._explainMatch(aiProjects, aiTopics, suggestedFolder.name)
+        } : null,
+        
+        tags: suggestedTags,
+        
+        detectedTopics: aiTopics,
+        detectedProjects: aiProjects,
+        
+        confidence: parseFloat(confidence.toFixed(2))
+      };
+
+      // 9. Auto-apply nếu được yêu cầu và confidence đủ cao
+      if (autoApply && confidence >= 0.70) {
+        const updates = {
+          tags: suggestedTags
+        };
+
+        if (suggestedArea) {
+          updates.areaId = suggestedArea._id;
+        }
+
+        if (suggestedFolder) {
+          updates.folderId = suggestedFolder._id;
+        }
+
+        await Card.findByIdAndUpdate(cardId, updates);
+
+        return {
+          organized: true,
+          applied: true,
+          suggestions,
+          changes: {
+            area: suggestedArea?.name || 'No change',
+            folder: suggestedFolder?.name || 'No change',
+            tags: suggestedTags,
+            previousTags: card.tags
+          },
+          confidence,
+          message: `Note organized successfully with ${(confidence * 100).toFixed(0)}% confidence`
+        };
+      }
+
+      // 10. Chỉ trả suggestions nếu không auto-apply
+      return {
+        organized: false,
+        applied: false,
+        suggestions,
+        confidence,
+        message: autoApply 
+          ? `Confidence too low (${(confidence * 100).toFixed(0)}%). Manual review recommended.`
+          : 'Review suggestions and apply manually'
+      };
+
+    } catch (error) {
+      console.error('smartOrganizeNote error:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Giải thích tại sao match
+   */
+  _explainMatch(aiProjects, aiTopics, targetName) {
+    const allTerms = [...aiProjects, ...aiTopics].filter(Boolean);
+    const targetLower = targetName.toLowerCase();
+    
+    const matchedTerms = allTerms.filter(term => {
+      const termLower = term.toLowerCase();
+      return targetLower.includes(termLower) || termLower.includes(targetLower);
+    });
+
+    if (matchedTerms.length > 0) {
+      return `Matched keywords: ${matchedTerms.join(', ')}`;
+    }
+
+    return 'Best match based on content analysis';
+  }
+
+  /**
+   * Gọi AI để đề xuất project (CHƯA TẠO trong DB)
    */
   async suggestProjectWithAI(userId, projectDescription) {
     try {

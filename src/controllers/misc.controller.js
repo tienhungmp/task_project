@@ -193,6 +193,57 @@ class AIController {
   }
 
   /**
+   * POST /api/ai/smart-organize/:cardId
+   * Phân loại thông minh: Gợi ý chủ đề, lĩnh vực dựa trên nội dung
+   * Tự động đặt tags, chọn area, chuyển vào folder phù hợp
+   * Body: { autoApply: boolean } - true sẽ tự động apply ngay
+   */
+  async smartOrganize(req, res) {
+    try {
+      const { cardId } = req.params;
+      const { autoApply = false } = req.body;
+
+      if (!cardId) {
+        return res.status(400).json({ 
+          error: 'cardId parameter is required' 
+        });
+      }
+
+      const result = await aiService.smartOrganizeNote(
+        req.userId,
+        cardId,
+        autoApply
+      );
+      
+      res.json({
+        success: true,
+        result
+      });
+    } catch (error) {
+      console.error('smartOrganize error:', error);
+
+      if (error.message === 'Card not found') {
+        return res.status(404).json({ 
+          error: 'Card not found',
+          detail: 'The specified card does not exist or you do not have access to it'
+        });
+      }
+
+      if (error.message.includes('AI service is unavailable')) {
+        return res.status(503).json({ 
+          error: 'AI service is currently unavailable',
+          detail: 'Please ensure the AI backend is running on port 8000'
+        });
+      }
+
+      res.status(500).json({ 
+        error: error.message,
+        detail: 'Failed to smart organize note'
+      });
+    }
+  }
+
+  /**
    * POST /api/ai/suggest-project
    * Gọi AI để đề xuất project info + tasks (CHƯA TẠO trong DB)
    * Body: { projectDescription: string }
