@@ -44,7 +44,7 @@ const projectSchema = new mongoose.Schema({
   },
   energyLevel: {
     type: String,
-    enum: ['low', 'medium', 'high'],
+    enum: ['low', 'medium', 'high', 'urgent'],
     default: 'medium'
   },
   calendarSync: {

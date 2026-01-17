@@ -26,7 +26,7 @@ const projectSchema = Joi.object({
   startDate: Joi.date().optional().allow(null),
   endDate: Joi.date().optional().allow(null).min(Joi.ref('startDate')),
   hideCompleted: Joi.boolean().optional(),
-  energyLevel: Joi.string().valid('low', 'medium', 'high').optional(),
+  energyLevel: Joi.string().valid('low', 'medium', 'high', 'urgent').optional(),
   calendarSync: Joi.boolean().optional()
 });
 
@@ -43,8 +43,8 @@ const cardSchema = Joi.object({
   title: Joi.string().min(1).required(),
   content: Joi.string().allow('').optional(),
   tags: Joi.array().items(Joi.string()).optional(),
-  status: Joi.string().valid('todo', 'doing', 'done').optional(),
-  energyLevel: Joi.string().valid('low', 'medium', 'high').optional(),
+  status: Joi.string().valid('todo', 'doing', 'done', 'pending').optional(),
+  energyLevel: Joi.string().valid('low', 'medium', 'high', 'urgent').optional(),
   dueDate: Joi.date().optional().allow(null),
   reminder: Joi.date().optional().allow(null),
   link: Joi.string().uri().optional().allow(null),
@@ -59,7 +59,7 @@ const checklistUpdateSchema = Joi.object({
 const convertToTaskSchema = Joi.object({
   dueDate: Joi.date().required(),
   projectId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().allow(null),
-  status: Joi.string().valid('todo', 'doing', 'done').optional()
+  status: Joi.string().valid('todo', 'doing', 'done', 'pending').optional()
 });
 
 const convertToNoteSchema = Joi.object({

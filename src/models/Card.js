@@ -57,13 +57,13 @@ const cardSchema = new mongoose.Schema({
   }],
   status: {
     type: String,
-    enum: ['todo', 'doing', 'done'],
+    enum: ['todo', 'doing', 'done','pending'],
     default: 'todo',
     index: true
   },
   energyLevel: {
     type: String,
-    enum: ['low', 'medium', 'high'],
+    enum: ['low', 'medium', 'high', 'urgent'],
     default: 'medium'
   },
   dueDate: {
