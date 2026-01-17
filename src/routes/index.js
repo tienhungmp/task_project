@@ -77,10 +77,14 @@ router.get('/dashboard/stats', authenticate, dashboardController.getStats);
 // SYNC
 router.get('/sync', authenticate, syncController.sync);
 
-// AI
+// AI ROUTES
 router.get('/ai/health', aiController.healthCheck);
 router.post('/ai/analyze-card', authenticate, aiController.analyzeCard);
 router.post('/ai/classify-note', authenticate, aiController.classifyNote);
 router.post('/ai/auto-organize/:cardId', authenticate, aiController.autoOrganizeNote);
+
+// AI Project Creation - 2 bước
+router.post('/ai/suggest-project', authenticate, aiController.suggestProject);
+router.post('/ai/create-project', authenticate, aiController.createProjectFromSuggestions);
 
 module.exports = router;

@@ -90,7 +90,6 @@ class AIController {
     } catch (error) {
       console.error('analyzeCard error:', error);
       
-      // Handle AI service unavailable
       if (error.message.includes('AI service is unavailable')) {
         return res.status(503).json({ 
           error: 'AI service is currently unavailable',
@@ -172,7 +171,6 @@ class AIController {
     } catch (error) {
       console.error('autoOrganizeNote error:', error);
 
-      // Handle card not found
       if (error.message === 'Card not found') {
         return res.status(404).json({ 
           error: 'Card not found',
@@ -190,6 +188,108 @@ class AIController {
       res.status(500).json({ 
         error: error.message,
         detail: 'Failed to auto-organize note'
+      });
+    }
+  }
+
+  /**
+   * POST /api/ai/suggest-project
+   * Gọi AI để đề xuất project info + tasks (CHƯA TẠO trong DB)
+   * Body: { projectDescription: string }
+   */
+  async suggestProject(req, res) {
+    try {
+      const { projectDescription } = req.body;
+
+      if (!projectDescription || projectDescription.trim().length < 20) {
+        return res.status(400).json({ 
+          error: 'Project description is required (minimum 20 characters)' 
+        });
+      }
+
+      const result = await aiService.suggestProjectWithAI(
+        req.userId,
+        projectDescription
+      );
+      
+      res.json({
+        success: true,
+        suggestions: result
+      });
+    } catch (error) {
+      console.error('suggestProject error:', error);
+
+      if (error.message.includes('AI service is unavailable')) {
+        return res.status(503).json({ 
+          error: 'AI service is currently unavailable',
+          detail: 'Please ensure the AI backend is running on port 8000'
+        });
+      }
+
+      res.status(500).json({ 
+        error: error.message,
+        detail: 'Failed to get AI suggestions'
+      });
+    }
+  }
+
+  /**
+   * POST /api/ai/create-project
+   * Tạo project + tasks thật trong DB từ AI suggestions
+   * Body: { 
+   *   areaId: ObjectId,
+   *   project: { name, description, color, icon, energyLevel, estimatedDurationDays },
+   *   tasks: [{ taskText, estimatedTimeMinutes, priority, status, energyLevel, suggestedTopic, order }]
+   * }
+   */
+  async createProjectFromSuggestions(req, res) {
+    try {
+      const { areaId, project, tasks } = req.body;
+
+      if (!areaId) {
+        return res.status(400).json({ 
+          error: 'areaId is required' 
+        });
+      }
+
+      if (!project || !project.name) {
+        return res.status(400).json({ 
+          error: 'project object with name is required' 
+        });
+      }
+
+      if (!tasks || !Array.isArray(tasks) || tasks.length === 0) {
+        return res.status(400).json({ 
+          error: 'tasks array is required and must not be empty' 
+        });
+      }
+
+      const result = await aiService.createProjectFromSuggestions(
+        req.userId,
+        areaId,
+        project,
+        tasks
+      );
+      
+      res.status(201).json({
+        success: true,
+        project: result.project,
+        tasks: result.tasks,
+        metadata: result.metadata
+      });
+    } catch (error) {
+      console.error('createProjectFromSuggestions error:', error);
+
+      if (error.message === 'Area not found') {
+        return res.status(404).json({ 
+          error: 'Area not found',
+          detail: 'The specified area does not exist or you do not have access to it'
+        });
+      }
+
+      res.status(500).json({ 
+        error: error.message,
+        detail: 'Failed to create project from suggestions'
       });
     }
   }
