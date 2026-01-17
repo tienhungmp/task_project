@@ -299,7 +299,7 @@ class AIService {
    * NEW: Smart Organize - Phân loại thông minh note
    * Tự động:
    * 1. Phân tích nội dung
-   * 2. Gợi ý chủ đề/lĩnh vực dựa trên các folders/areas có sẵn
+   * 2. Tìm area/folder phù hợp HOẶC tạo mới nếu không có
    * 3. Đặt tags phù hợp
    * 4. Chuyển vào folder đúng chủ đề
    * 5. Set area phù hợp
@@ -341,29 +341,67 @@ class AIService {
       const aiProjects = metadata.projects_discovered || [];
       const aiTopics = metadata.topics_discovered || [];
 
-      // 5. Tìm area và folder phù hợp nhất
-      const suggestedArea = this._findBestMatchingArea(aiProjects, aiTopics, userAreas);
-      const suggestedFolder = suggestedArea 
+      // 5. Tìm HOẶC TẠO area phù hợp
+      let suggestedArea = this._findBestMatchingArea(aiProjects, aiTopics, userAreas);
+      let areaCreated = false;
+
+      if (!suggestedArea && autoApply) {
+        // Không tìm thấy area phù hợp → TẠO MỚI
+        const areaName = aiProjects[0] || aiTopics[0] || 'General';
+        const newArea = new Area({
+          userId,
+          name: areaName,
+          description: `Auto-created for: ${areaName}`,
+          color: this._generateRandomColor(),
+          icon: this._generateRandomIcon()
+        });
+        await newArea.save();
+        suggestedArea = newArea.toObject();
+        areaCreated = true;
+      }
+
+      // 6. Tìm HOẶC TẠO folder phù hợp
+      let suggestedFolder = suggestedArea 
         ? this._findBestMatchingFolder(aiProjects, aiTopics, userFolders, suggestedArea._id)
         : null;
+      let folderCreated = false;
 
-      // 6. Tạo tags từ topics
+      if (suggestedArea && !suggestedFolder && autoApply) {
+        // Không tìm thấy folder phù hợp → TẠO MỚI
+        const folderName = aiTopics[0] || aiProjects[0] || 'Notes';
+        const newFolder = new Folder({
+          userId,
+          areaId: suggestedArea._id,
+          name: folderName,
+          description: `Auto-created for: ${folderName}`,
+          color: this._generateRandomColor(),
+          icon: this._generateRandomIcon()
+        });
+        await newFolder.save();
+        suggestedFolder = newFolder.toObject();
+        folderCreated = true;
+      }
+
+      // 7. Tạo tags từ topics
       const suggestedTags = [...new Set([...card.tags, ...aiTopics])].slice(0, 5);
 
-      // 7. Tính confidence
+      // 8. Tính confidence
       const priorityCounts = this._countFrequency(tasks.map(t => t.priority));
       const dominantPriority = this._getMostCommon(priorityCounts);
       const priorityConsistency = priorityCounts[dominantPriority] / tasks.length;
       const confidence = Math.min(0.95, 0.5 + (priorityConsistency * 0.3) + (tasks.length * 0.05));
 
-      // 8. Chuẩn bị suggestions
+      // 9. Chuẩn bị suggestions
       const suggestions = {
         area: suggestedArea ? {
           _id: suggestedArea._id,
           name: suggestedArea.name,
           color: suggestedArea.color,
           icon: suggestedArea.icon,
-          matchReason: this._explainMatch(aiProjects, aiTopics, suggestedArea.name)
+          isNew: areaCreated,
+          matchReason: areaCreated 
+            ? 'Created new area for this topic'
+            : this._explainMatch(aiProjects, aiTopics, suggestedArea.name)
         } : null,
         
         folder: suggestedFolder ? {
@@ -372,7 +410,10 @@ class AIService {
           color: suggestedFolder.color,
           icon: suggestedFolder.icon,
           areaId: suggestedFolder.areaId,
-          matchReason: this._explainMatch(aiProjects, aiTopics, suggestedFolder.name)
+          isNew: folderCreated,
+          matchReason: folderCreated
+            ? 'Created new folder for this topic'
+            : this._explainMatch(aiProjects, aiTopics, suggestedFolder.name)
         } : null,
         
         tags: suggestedTags,
@@ -383,7 +424,7 @@ class AIService {
         confidence: parseFloat(confidence.toFixed(2))
       };
 
-      // 9. Auto-apply nếu được yêu cầu và confidence đủ cao
+      // 10. Auto-apply nếu được yêu cầu và confidence đủ cao
       if (autoApply && confidence >= 0.70) {
         const updates = {
           tags: suggestedTags
@@ -405,16 +446,18 @@ class AIService {
           suggestions,
           changes: {
             area: suggestedArea?.name || 'No change',
+            areaCreated,
             folder: suggestedFolder?.name || 'No change',
+            folderCreated,
             tags: suggestedTags,
             previousTags: card.tags
           },
           confidence,
-          message: `Note organized successfully with ${(confidence * 100).toFixed(0)}% confidence`
+          message: `Note organized successfully with ${(confidence * 100).toFixed(0)}% confidence${areaCreated ? ' (new area created)' : ''}${folderCreated ? ' (new folder created)' : ''}`
         };
       }
 
-      // 10. Chỉ trả suggestions nếu không auto-apply
+      // 11. Chỉ trả suggestions nếu không auto-apply
       return {
         organized: false,
         applied: false,
@@ -429,6 +472,20 @@ class AIService {
       console.error('smartOrganizeNote error:', error.message);
       throw error;
     }
+  }
+
+  /**
+   * Generate random color (0-10)
+   */
+  _generateRandomColor() {
+    return Math.floor(Math.random() * 11);
+  }
+
+  /**
+   * Generate random icon (0-50)
+   */
+  _generateRandomIcon() {
+    return Math.floor(Math.random() * 51);
   }
 
   /**
