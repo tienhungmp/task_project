@@ -346,6 +346,11 @@ class AIService {
       const aiProjects = metadata.projects_discovered || [];
       const aiTopics = metadata.topics_discovered || [];
 
+      console.log('🤖 AI Analysis Result:');
+      console.log('  - Projects detected:', aiProjects);
+      console.log('  - Topics detected:', aiTopics);
+      console.log('  - Tasks extracted:', tasks.length);
+
       // 3. Tạo title từ task đầu tiên hoặc text
       const title = tasks[0]?.task_text || text.substring(0, 100);
 
@@ -861,19 +866,58 @@ class AIService {
 
     const searchTerms = [...aiProjects, ...aiTopics]
       .filter(Boolean)
-      .map(t => t.toLowerCase());
+      .map(t => t.toLowerCase().trim());
 
-    if (searchTerms.length === 0) return userAreas[0];
+    if (searchTerms.length === 0) return null;
 
-    for (const term of searchTerms) {
-      const match = userAreas.find(area => {
-        const areaName = area.name.toLowerCase();
-        return areaName.includes(term) || term.includes(areaName);
-      });
-      if (match) return match;
+    console.log('  - Search terms:', searchTerms);
+
+    // Tìm match tốt nhất với scoring
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const area of userAreas) {
+      const areaName = area.name.toLowerCase().trim();
+      let score = 0;
+
+      for (const term of searchTerms) {
+        // Exact match (toàn bộ tên)
+        if (areaName === term) {
+          score += 100;
+        }
+        // Area name contains term
+        else if (areaName.includes(term)) {
+          score += 50;
+        }
+        // Term contains area name
+        else if (term.includes(areaName)) {
+          score += 30;
+        }
+        // Word-level match (chia nhỏ thành từ)
+        else {
+          const areaWords = areaName.split(/\s+/);
+          const termWords = term.split(/\s+/);
+          
+          for (const aw of areaWords) {
+            for (const tw of termWords) {
+              if (aw === tw && aw.length > 2) { // Chỉ match từ dài hơn 2 ký tự
+                score += 20;
+              }
+            }
+          }
+        }
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = area;
+      }
     }
 
-    return userAreas[0];
+    console.log('  - Best match:', bestMatch?.name, 'with score:', bestScore);
+
+    // Chỉ return nếu score đủ cao (>= 20)
+    return bestScore >= 20 ? bestMatch : null;
   }
 
   _findBestMatchingFolder(aiProjects, aiTopics, userFolders, areaId) {
@@ -885,19 +929,58 @@ class AIService {
 
     const searchTerms = [...aiProjects, ...aiTopics]
       .filter(Boolean)
-      .map(t => t.toLowerCase());
+      .map(t => t.toLowerCase().trim());
 
-    if (searchTerms.length === 0) return foldersInArea[0];
+    if (searchTerms.length === 0) return null;
 
-    for (const term of searchTerms) {
-      const match = foldersInArea.find(folder => {
-        const folderName = folder.name.toLowerCase();
-        return folderName.includes(term) || term.includes(folderName);
-      });
-      if (match) return match;
+    console.log('  - Search terms:', searchTerms);
+
+    // Tìm match tốt nhất với scoring
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const folder of foldersInArea) {
+      const folderName = folder.name.toLowerCase().trim();
+      let score = 0;
+
+      for (const term of searchTerms) {
+        // Exact match
+        if (folderName === term) {
+          score += 100;
+        }
+        // Folder name contains term
+        else if (folderName.includes(term)) {
+          score += 50;
+        }
+        // Term contains folder name
+        else if (term.includes(folderName)) {
+          score += 30;
+        }
+        // Word-level match
+        else {
+          const folderWords = folderName.split(/\s+/);
+          const termWords = term.split(/\s+/);
+          
+          for (const fw of folderWords) {
+            for (const tw of termWords) {
+              if (fw === tw && fw.length > 2) {
+                score += 20;
+              }
+            }
+          }
+        }
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = folder;
+      }
     }
 
-    return foldersInArea[0];
+    console.log('  - Best match:', bestMatch?.name, 'with score:', bestScore);
+
+    // Chỉ return nếu score đủ cao (>= 20)
+    return bestScore >= 20 ? bestMatch : null;
   }
 
   _generateReasoning(topic, confidence, taskCount, aiProjects, aiTopics) {
