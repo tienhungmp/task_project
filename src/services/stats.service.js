@@ -67,7 +67,13 @@ class StatsService {
    * Thống kê theo khoảng thời gian tùy chọn
    */
   async getRangeStats(userId, startDate, endDate) {
-    return await this._getStatsForRange(userId, startDate, endDate);
+    const stats = await this._getStatsForRange(userId, startDate, endDate);
+    
+    // Thêm breakdown theo ngày trong khoảng thời gian
+    const dailyBreakdown = await this._getDailyBreakdown(userId, startDate, endDate);
+    stats.dailyBreakdown = dailyBreakdown;
+    
+    return stats;
   }
 
   /**
