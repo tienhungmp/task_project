@@ -16,6 +16,8 @@ const upload = require('../middleware/upload');
 const { registerSchema, loginSchema, refreshTokenSchema, updateProfileSchema, changePasswordSchema } = require('../dto/auth.dto');
 const { areaSchema, folderSchema, projectSchema, cardSchema, checklistUpdateSchema, convertToTaskSchema, convertToNoteSchema } = require('../dto/validation.dto');
 
+const statsController = require('../controllers/stats.controller');
+
 // AUTH ROUTES
 router.post('/auth/register', upload.single('avatar'), validate(registerSchema), authController.register);
 router.post('/auth/login', validate(loginSchema), authController.login);
@@ -73,6 +75,15 @@ router.get('/search', authenticate, searchController.search);
 // DASHBOARD
 router.get('/dashboard/energy-overview', authenticate, dashboardController.getEnergyOverview);
 router.get('/dashboard/stats', authenticate, dashboardController.getStats);
+
+// STATISTICS - Thống kê chi tiết
+router.get('/stats/overview', authenticate, statsController.getOverview);
+router.get('/stats/daily', authenticate, statsController.getDailyStats);
+router.get('/stats/weekly', authenticate, statsController.getWeeklyStats);
+router.get('/stats/monthly', authenticate, statsController.getMonthlyStats);
+router.get('/stats/yearly', authenticate, statsController.getYearlyStats);
+router.get('/stats/range', authenticate, statsController.getRangeStats);
+router.get('/stats/trends', authenticate, statsController.getTrends);
 
 // SYNC
 router.get('/sync', authenticate, syncController.sync);
