@@ -377,8 +377,8 @@ class AIService {
           userId,
           name: areaName,
           description: `Auto-created for: ${areaName}`,
-          color: this._generateRandomColor(),
-          icon: this._generateRandomIcon()
+          color: 4288423856,
+          icon: 57527
         });
         await newArea.save();
         targetArea = newArea.toObject();
@@ -396,8 +396,8 @@ class AIService {
           areaId: targetArea._id,
           name: folderName,
           description: `Auto-created for: ${folderName}`,
-          color: this._generateRandomColor(),
-          icon: this._generateRandomIcon()
+          color: 58019,
+          icon: 4294967040
         });
         await newFolder.save();
         targetFolder = newFolder.toObject();
