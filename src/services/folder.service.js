@@ -41,7 +41,6 @@ class FolderService {
 
   async create(userId, data) {
     const folder = new Folder({ userId, ...data });
-    
     if (data.password) {
       await folder.setPassword(data.password);
     }
@@ -78,6 +77,7 @@ class FolderService {
 
   async verifyAccess(id, userId, password) {
     const folder = await Folder.findOne({ _id: id, userId });
+
     if (!folder) {
       throw new Error('Folder not found');
     }

@@ -47,14 +47,36 @@ const folderSchema = new mongoose.Schema({
 folderSchema.index({ userId: 1, areaId: 1 });
 folderSchema.index({ parentId: 1 });
 
-folderSchema.methods.setPassword = async function(password) {
-  this.passwordHash = await bcrypt.hash(password, 10);
+folderSchema.methods.setPassword = async function (password) {
+  if (!password) {
+    throw new Error('Password is required');
+  }
+
+  const normalized = String(password).trim();
+  if (!normalized) {
+    throw new Error('Password cannot be empty');
+  }
+
+  const saltRounds = 10;
+  this.passwordHash = await bcrypt.hash(normalized, saltRounds);
 };
 
-folderSchema.methods.verifyPassword = async function(password) {
+folderSchema.methods.verifyPassword = async function (password) {
   if (!this.passwordHash) return true;
-  return bcrypt.compare(password, this.passwordHash);
+  
+  console.log('Input password (quoted): ', JSON.stringify(String(password)));
+  console.log('Trimmed password (quoted): ', JSON.stringify(String(password).trim()));
+  console.log('Stored hash: ', this.passwordHash);
+  
+  if (!password) return false;
+  const normalized = String(password).trim();
+  if (!normalized) return false;
+  
+  const match = await bcrypt.compare(normalized, this.passwordHash);
+  console.log('Bcrypt compare result: ', match);
+  return match;
 };
+
 
 folderSchema.methods.toJSON = function() {
   const obj = this.toObject();
