@@ -1,42 +1,43 @@
 const Card = require('../models/Card');
+const notificationService = require('./notification.service');
 
 class CardService {
-async getAll(userId, filters = {}, page = 1, limit = 20) {
-  const skip = (page - 1) * limit;
-  const query = { userId, deletedAt: null };
+  async getAll(userId, filters = {}, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const query = { userId, deletedAt: null };
 
-  if (filters.projectId) query.projectId = filters.projectId;
-  if (filters.folderId) query.folderId = filters.folderId;
-  if (filters.areaId) query.areaId = filters.areaId;
-  if (filters.status) query.status = filters.status;
-  if (filters.isArchived !== undefined) query.isArchived = filters.isArchived === 'true';
+    if (filters.projectId) query.projectId = filters.projectId;
+    if (filters.folderId) query.folderId = filters.folderId;
+    if (filters.areaId) query.areaId = filters.areaId;
+    if (filters.status) query.status = filters.status;
+    if (filters.isArchived !== undefined) query.isArchived = filters.isArchived === 'true';
 
-  if (filters.search) {
-    query.$text = { $search: filters.search };
-  }
-
-  const [cards, total] = await Promise.all([
-    Card.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('areaId', 'name color icon')
-      .populate('folderId', 'name color icon')
-      .populate('projectId', 'name color icon')
-      .lean(),
-    Card.countDocuments(query)
-  ]);
-
-  return {
-    cards,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
+    if (filters.search) {
+      query.$text = { $search: filters.search };
     }
-  };
-}
+
+    const [cards, total] = await Promise.all([
+      Card.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('areaId', 'name color icon')
+        .populate('folderId', 'name color icon')
+        .populate('projectId', 'name color icon')
+        .lean(),
+      Card.countDocuments(query)
+    ]);
+
+    return {
+      cards,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
 
   async getByFolder(userId, folderId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
@@ -80,6 +81,10 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
   async create(userId, data) {
     const card = new Card({ userId, ...data });
     await card.save();
+
+    // Tạo thông báo nếu task có dueDate hoặc reminder
+    this._checkAndCreateNotifications(card._id, userId);
+
     return card;
   }
 
@@ -93,6 +98,9 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
     if (!card) {
       throw new Error('Card not found');
     }
+
+    // Kiểm tra và tạo thông báo nếu dueDate hoặc reminder thay đổi
+    this._checkAndCreateNotifications(card._id, userId);
 
     return card;
   }
@@ -171,12 +179,6 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
     };
   }
 
-  /**
-   * Chuyển Note thành Task
-   * - Set dueDate (required)
-   * - Có thể set projectId và status
-   * - Clear folderId nếu có projectId
-   */
   async convertToTask(id, userId, dueDate, projectId = null, status = 'todo') {
     const card = await Card.findOne({ _id: id, userId, deletedAt: null });
     
@@ -184,7 +186,6 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
       throw new Error('Card not found');
     }
 
-    // Kiểm tra đã là task chưa
     if (card.dueDate) {
       throw new Error('Card is already a task');
     }
@@ -194,7 +195,6 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
       status: status || 'todo'
     };
 
-    // Nếu có projectId, chuyển sang project và clear folderId
     if (projectId) {
       updates.projectId = projectId;
       updates.folderId = null;
@@ -206,16 +206,12 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
       { new: true, runValidators: true }
     );
 
+    // Tạo thông báo cho task mới
+    this._checkAndCreateNotifications(updatedCard._id, userId);
+
     return updatedCard;
   }
 
-  /**
-   * Chuyển Task thành Note
-   * - Xóa dueDate
-   * - Xóa status về null hoặc giữ nguyên
-   * - Có thể set folderId
-   * - Clear projectId nếu có folderId
-   */
   async convertToNote(id, userId, folderId = null) {
     const card = await Card.findOne({ _id: id, userId, deletedAt: null });
     
@@ -223,18 +219,16 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
       throw new Error('Card not found');
     }
 
-    // Kiểm tra đã là note chưa
     if (!card.dueDate) {
       throw new Error('Card is already a note');
     }
 
     const updates = {
       dueDate: null,
-      reminder: null,  // Xóa reminder nếu có
-      status: 'todo'   // Reset status về mặc định
+      reminder: null,
+      status: 'todo'
     };
 
-    // Nếu có folderId, chuyển sang folder và clear projectId
     if (folderId) {
       updates.folderId = folderId;
       updates.projectId = null;
@@ -247,6 +241,28 @@ async getAll(userId, filters = {}, page = 1, limit = 20) {
     );
 
     return updatedCard;
+  }
+
+  /**
+   * Helper method để kiểm tra và tạo thông báo
+   * Chạy async không cần await để không block request
+   */
+  _checkAndCreateNotifications(cardId, userId) {
+    // Chạy async, không block
+    setImmediate(async () => {
+      try {
+        // Kiểm tra task sắp đến hạn
+        await notificationService.createDueSoonNotification(cardId, userId);
+        
+        // Kiểm tra task quá hạn
+        await notificationService.createOverdueNotification(cardId, userId);
+        
+        // Kiểm tra reminder
+        await notificationService.createReminderNotification(cardId, userId);
+      } catch (error) {
+        console.error('Error creating notifications:', error);
+      }
+    });
   }
 }
 

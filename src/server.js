@@ -7,12 +7,16 @@ const path = require('path');
 
 const connectDB = require('./config/database');
 const routes = require('./routes');
+const { initNotificationCronJob } = require('./cron/notification.cron');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-connectDB();
+connectDB().then(() => {
+  // Initialize notification cron job after successful DB connection
+  initNotificationCronJob();
+});
 
 // Middleware
 app.use(helmet());

@@ -7,6 +7,7 @@ const areaController = require('../controllers/area.controller');
 const folderController = require('../controllers/folder.controller');
 const projectController = require('../controllers/project.controller');
 const cardController = require('../controllers/card.controller');
+const notificationController = require('../controllers/notification.controller');
 const { searchController, dashboardController, syncController, aiController } = require('../controllers/misc.controller');
 
 const authenticate = require('../middleware/auth');
@@ -68,6 +69,15 @@ router.put('/cards/:cardId/checklist', authenticate, validate(checklistUpdateSch
 // CONVERT ROUTES - Chuyển đổi Note <-> Task
 router.post('/cards/:id/convert-to-task', authenticate, validate(convertToTaskSchema), cardController.convertToTask);
 router.post('/cards/:id/convert-to-note', authenticate, validate(convertToNoteSchema), cardController.convertToNote);
+
+// NOTIFICATION ROUTES
+router.get('/notifications', authenticate, notificationController.getAll);
+router.get('/notifications/unread-count', authenticate, notificationController.getUnreadCount);
+router.put('/notifications/:id/read', authenticate, notificationController.markAsRead);
+router.put('/notifications/read-all', authenticate, notificationController.markAllAsRead);
+router.delete('/notifications/:id', authenticate, notificationController.delete);
+router.delete('/notifications/read', authenticate, notificationController.deleteAllRead);
+router.post('/notifications/scan', authenticate, notificationController.triggerScan); // For testing/admin
 
 // SEARCH
 router.get('/search', authenticate, searchController.search);
