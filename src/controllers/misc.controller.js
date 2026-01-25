@@ -1,7 +1,7 @@
-const cardService = require('../services/card.service');
-const dashboardService = require('../services/dashboard.service');
-const syncService = require('../services/sync.service');
-const aiService = require('../services/ai.service');
+const cardService = require("../services/card.service");
+const dashboardService = require("../services/dashboard.service");
+const syncService = require("../services/sync.service");
+const aiService = require("../services/ai.service");
 
 // ==================== SEARCH CONTROLLER ====================
 class SearchController {
@@ -9,7 +9,7 @@ class SearchController {
     try {
       const { q, tags, dateFrom, page = 1, limit = 20 } = req.query;
       const tagArray = tags ? (Array.isArray(tags) ? tags : [tags]) : [];
-      
+
       const result = await cardService.search(
         req.userId,
         q,
@@ -38,7 +38,7 @@ class DashboardController {
 
   async getStats(req, res) {
     try {
-      const { period = 'week' } = req.query;
+      const { period = "week" } = req.query;
       const stats = await dashboardService.getStats(req.userId, period);
       res.json(stats);
     } catch (error) {
@@ -53,9 +53,9 @@ class SyncController {
     try {
       const { lastSync } = req.query;
       if (!lastSync) {
-        return res.status(400).json({ error: 'lastSync parameter required' });
+        return res.status(400).json({ error: "lastSync parameter required" });
       }
-      
+
       const updates = await syncService.getUpdates(req.userId, lastSync);
       res.json(updates);
     } catch (error) {
@@ -76,30 +76,30 @@ class AIController {
       const { content, attachments = [] } = req.body;
 
       if (!content || content.trim().length === 0) {
-        return res.status(400).json({ 
-          error: 'Content is required and must not be empty' 
+        return res.status(400).json({
+          error: "Content is required and must not be empty",
         });
       }
 
       const analysis = await aiService.analyzeCard(content, attachments);
-      
+
       res.json({
         success: true,
-        analysis
+        analysis,
       });
     } catch (error) {
-      console.error('analyzeCard error:', error);
-      
-      if (error.message.includes('AI service is unavailable')) {
-        return res.status(503).json({ 
-          error: 'AI service is currently unavailable',
-          detail: 'Please ensure the AI backend is running on port 8000'
+      console.error("analyzeCard error:", error);
+
+      if (error.message.includes("AI service is unavailable")) {
+        return res.status(503).json({
+          error: "AI service is currently unavailable",
+          detail: "Please ensure the AI backend is running on port 8000",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         error: error.message,
-        detail: 'Failed to analyze card content'
+        detail: "Failed to analyze card content",
       });
     }
   }
@@ -111,11 +111,11 @@ class AIController {
    */
   async classifyNote(req, res) {
     try {
-      const { content, title = '', tags = [] } = req.body;
+      const { content, title = "", tags = [] } = req.body;
 
       if (!content || content.trim().length === 0) {
-        return res.status(400).json({ 
-          error: 'Content is required and must not be empty' 
+        return res.status(400).json({
+          error: "Content is required and must not be empty",
         });
       }
 
@@ -125,24 +125,24 @@ class AIController {
         title,
         tags
       );
-      
+
       res.json({
         success: true,
-        classification
+        classification,
       });
     } catch (error) {
-      console.error('classifyNote error:', error);
-      
-      if (error.message.includes('AI service is unavailable')) {
-        return res.status(503).json({ 
-          error: 'AI service is currently unavailable',
-          detail: 'Please ensure the AI backend is running on port 8000'
+      console.error("classifyNote error:", error);
+
+      if (error.message.includes("AI service is unavailable")) {
+        return res.status(503).json({
+          error: "AI service is currently unavailable",
+          detail: "Please ensure the AI backend is running on port 8000",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         error: error.message,
-        detail: 'Failed to classify note'
+        detail: "Failed to classify note",
       });
     }
   }
@@ -157,44 +157,45 @@ class AIController {
       const { cardId } = req.params;
 
       if (!cardId) {
-        return res.status(400).json({ 
-          error: 'cardId parameter is required' 
+        return res.status(400).json({
+          error: "cardId parameter is required",
         });
       }
 
       const result = await aiService.autoOrganizeNote(req.userId, cardId);
-      
+
       res.json({
         success: true,
-        result
+        result,
       });
     } catch (error) {
-      console.error('autoOrganizeNote error:', error);
+      console.error("autoOrganizeNote error:", error);
 
-      if (error.message === 'Card not found') {
-        return res.status(404).json({ 
-          error: 'Card not found',
-          detail: 'The specified card does not exist or you do not have access to it'
+      if (error.message === "Card not found") {
+        return res.status(404).json({
+          error: "Card not found",
+          detail:
+            "The specified card does not exist or you do not have access to it",
         });
       }
 
-      if (error.message.includes('AI service is unavailable')) {
-        return res.status(503).json({ 
-          error: 'AI service is currently unavailable',
-          detail: 'Please ensure the AI backend is running on port 8000'
+      if (error.message.includes("AI service is unavailable")) {
+        return res.status(503).json({
+          error: "AI service is currently unavailable",
+          detail: "Please ensure the AI backend is running on port 8000",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         error: error.message,
-        detail: 'Failed to auto-organize note'
+        detail: "Failed to auto-organize note",
       });
     }
   }
 
   /**
    * POST /api/ai/quick-note
-   * Tạo note nhanh từ text: AI tự động phân tích, tạo note, 
+   * Tạo note nhanh từ text: AI tự động phân tích, tạo note,
    * chọn/tạo area và folder phù hợp, đặt tags
    * Body: { text: string }
    */
@@ -203,33 +204,33 @@ class AIController {
       const { text } = req.body;
 
       if (!text || text.trim().length < 10) {
-        return res.status(400).json({ 
-          error: 'Text is required (minimum 10 characters)' 
+        return res.status(400).json({
+          error: "Text is required (minimum 10 characters)",
         });
       }
 
       const result = await aiService.createQuickNote(req.userId, text);
-      
+
       res.status(201).json({
         success: true,
         note: result.note,
         area: result.area,
         folder: result.folder,
-        metadata: result.metadata
+        metadata: result.metadata,
       });
     } catch (error) {
-      console.error('quickNote error:', error);
+      console.error("quickNote error:", error);
 
-      if (error.message.includes('AI service is unavailable')) {
-        return res.status(503).json({ 
-          error: 'AI service is currently unavailable',
-          detail: 'Please ensure the AI backend is running on port 8000'
+      if (error.message.includes("AI service is unavailable")) {
+        return res.status(503).json({
+          error: "AI service is currently unavailable",
+          detail: "Please ensure the AI backend is running on port 8000",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         error: error.message,
-        detail: 'Failed to create quick note'
+        detail: "Failed to create quick note",
       });
     }
   }
@@ -246,8 +247,8 @@ class AIController {
       const { autoApply = false } = req.body;
 
       if (!cardId) {
-        return res.status(400).json({ 
-          error: 'cardId parameter is required' 
+        return res.status(400).json({
+          error: "cardId parameter is required",
         });
       }
 
@@ -256,31 +257,32 @@ class AIController {
         cardId,
         autoApply
       );
-      
+
       res.json({
         success: true,
-        result
+        result,
       });
     } catch (error) {
-      console.error('smartOrganize error:', error);
+      console.error("smartOrganize error:", error);
 
-      if (error.message === 'Card not found') {
-        return res.status(404).json({ 
-          error: 'Card not found',
-          detail: 'The specified card does not exist or you do not have access to it'
+      if (error.message === "Card not found") {
+        return res.status(404).json({
+          error: "Card not found",
+          detail:
+            "The specified card does not exist or you do not have access to it",
         });
       }
 
-      if (error.message.includes('AI service is unavailable')) {
-        return res.status(503).json({ 
-          error: 'AI service is currently unavailable',
-          detail: 'Please ensure the AI backend is running on port 8000'
+      if (error.message.includes("AI service is unavailable")) {
+        return res.status(503).json({
+          error: "AI service is currently unavailable",
+          detail: "Please ensure the AI backend is running on port 8000",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         error: error.message,
-        detail: 'Failed to smart organize note'
+        detail: "Failed to smart organize note",
       });
     }
   }
@@ -295,8 +297,8 @@ class AIController {
       const { projectDescription } = req.body;
 
       if (!projectDescription || projectDescription.trim().length < 20) {
-        return res.status(400).json({ 
-          error: 'Project description is required (minimum 20 characters)' 
+        return res.status(400).json({
+          error: "Project description is required (minimum 20 characters)",
         });
       }
 
@@ -304,24 +306,24 @@ class AIController {
         req.userId,
         projectDescription
       );
-      
+
       res.json({
         success: true,
-        suggestions: result
+        suggestions: result,
       });
     } catch (error) {
-      console.error('suggestProject error:', error);
+      console.error("suggestProject error:", error);
 
-      if (error.message.includes('AI service is unavailable')) {
-        return res.status(503).json({ 
-          error: 'AI service is currently unavailable',
-          detail: 'Please ensure the AI backend is running on port 8000'
+      if (error.message.includes("AI service is unavailable")) {
+        return res.status(503).json({
+          error: "AI service is currently unavailable",
+          detail: "Please ensure the AI backend is running on port 8000",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         error: error.message,
-        detail: 'Failed to get AI suggestions'
+        detail: "Failed to get AI suggestions",
       });
     }
   }
@@ -329,7 +331,7 @@ class AIController {
   /**
    * POST /api/ai/create-project
    * Tạo project + tasks thật trong DB từ AI suggestions
-   * Body: { 
+   * Body: {
    *   areaId: ObjectId,
    *   project: { name, description, color, icon, energyLevel, estimatedDurationDays },
    *   tasks: [{ taskText, estimatedTimeMinutes, priority, status, energyLevel, suggestedTopic, order }]
@@ -340,20 +342,20 @@ class AIController {
       const { areaId, project, tasks } = req.body;
 
       if (!areaId) {
-        return res.status(400).json({ 
-          error: 'areaId is required' 
+        return res.status(400).json({
+          error: "areaId is required",
         });
       }
 
       if (!project || !project.name) {
-        return res.status(400).json({ 
-          error: 'project object with name is required' 
+        return res.status(400).json({
+          error: "project object with name is required",
         });
       }
 
       if (!tasks || !Array.isArray(tasks) || tasks.length === 0) {
-        return res.status(400).json({ 
-          error: 'tasks array is required and must not be empty' 
+        return res.status(400).json({
+          error: "tasks array is required and must not be empty",
         });
       }
 
@@ -363,26 +365,27 @@ class AIController {
         project,
         tasks
       );
-      
+
       res.status(201).json({
         success: true,
         project: result.project,
         tasks: result.tasks,
-        metadata: result.metadata
+        metadata: result.metadata,
       });
     } catch (error) {
-      console.error('createProjectFromSuggestions error:', error);
+      console.error("createProjectFromSuggestions error:", error);
 
-      if (error.message === 'Area not found') {
-        return res.status(404).json({ 
-          error: 'Area not found',
-          detail: 'The specified area does not exist or you do not have access to it'
+      if (error.message === "Area not found") {
+        return res.status(404).json({
+          error: "Area not found",
+          detail:
+            "The specified area does not exist or you do not have access to it",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         error: error.message,
-        detail: 'Failed to create project from suggestions'
+        detail: "Failed to create project from suggestions",
       });
     }
   }
@@ -393,29 +396,68 @@ class AIController {
    */
   async healthCheck(req, res) {
     try {
-      const axios = require('axios');
-      const AI_BACKEND_URL = process.env.AI_BACKEND_URL || 'http://localhost:8000';
-      
+      const axios = require("axios");
+      const AI_BACKEND_URL =
+        process.env.AI_BACKEND_URL || "http://localhost:8000";
+
       const response = await axios.get(`${AI_BACKEND_URL}/health`, {
-        timeout: 5000
+        timeout: 5000,
       });
 
       res.json({
         success: true,
         aiBackend: {
-          status: 'healthy',
+          status: "healthy",
           url: AI_BACKEND_URL,
-          ...response.data
-        }
+          ...response.data,
+        },
       });
     } catch (error) {
       res.status(503).json({
         success: false,
         aiBackend: {
-          status: 'unavailable',
-          url: process.env.AI_BACKEND_URL || 'http://localhost:8000',
-          error: error.message
-        }
+          status: "unavailable",
+          url: process.env.AI_BACKEND_URL || "http://localhost:8000",
+          error: error.message,
+        },
+      });
+    }
+  }
+
+  /**
+   * POST /api/ai/suggest-folder
+   * Gợi ý folder phù hợp cho note dựa vào nội dung
+   * Body: { text: string }
+   */
+  async suggestFolder(req, res) {
+    try {
+      const { text } = req.body;
+
+      if (!text || text.trim().length < 10) {
+        return res.status(400).json({
+          error: "Text is required (minimum 10 characters)",
+        });
+      }
+
+      const result = await aiService.suggestFolder(req.userId, text);
+
+      res.json({
+        success: true,
+        ...result,
+      });
+    } catch (error) {
+      console.error("suggestFolder error:", error);
+
+      if (error.message.includes("AI service is unavailable")) {
+        return res.status(503).json({
+          error: "AI service is currently unavailable",
+          detail: "Please ensure the AI backend is running on port 8000",
+        });
+      }
+
+      res.status(500).json({
+        error: error.message,
+        detail: "Failed to suggest folder",
       });
     }
   }
@@ -425,5 +467,5 @@ module.exports = {
   searchController: new SearchController(),
   dashboardController: new DashboardController(),
   syncController: new SyncController(),
-  aiController: new AIController()
+  aiController: new AIController(),
 };

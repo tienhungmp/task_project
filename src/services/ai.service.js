@@ -996,6 +996,99 @@ class AIService {
       suggestedAction: confidence >= 0.75 ? 'Auto-organize recommended' : 'Manual review suggested'
     };
   }
+
+  /**
+ * Gợi ý folder phù hợp cho note
+ */
+async suggestFolder(userId, noteText) {
+  try {
+    // 1. Lấy tất cả folders của user
+    const userFolders = await Folder.find({ userId })
+      .select('_id name')
+      .lean();
+
+    if (userFolders.length === 0) {
+      return {
+        success: true,
+        found: false,
+        suggestedFolder: null,
+        confidence: 0,
+        reasoning: 'User has no folders',
+        allScores: []
+      };
+    }
+
+    // 2. Format folders để gửi cho AI
+    const foldersForAI = userFolders.map(f => ({
+      _id: f._id.toString(),
+      name: f.name
+    }));
+
+    // 3. Gọi AI backend
+    const axios = require('axios');
+    const AI_BACKEND_URL = process.env.AI_BACKEND_URL || 'http://localhost:8000';
+    
+    const response = await axios.post(
+      `${AI_BACKEND_URL}/api/suggest-folder`,
+      {
+        text: noteText,
+        user_folders: foldersForAI,
+        user_id: userId
+      },
+      {
+        timeout: 30000,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.data || !response.data.success) {
+      throw new Error('AI backend returned unsuccessful response');
+    }
+
+    const aiResult = response.data;
+
+    // 4. Lấy thông tin đầy đủ của folder được gợi ý (nếu có)
+    let folderDetails = null;
+    if (aiResult.found_match && aiResult.suggested_folder) {
+      folderDetails = await Folder.findById(aiResult.suggested_folder._id).lean();
+    }
+
+    return {
+      success: true,
+      found: aiResult.found_match,
+      suggestedFolder: folderDetails ? {
+        _id: folderDetails._id,
+        name: folderDetails.name,
+        color: folderDetails.color,
+        icon: folderDetails.icon,
+        areaId: folderDetails.areaId
+      } : null,
+      confidence: aiResult.confidence,
+      reasoning: aiResult.reasoning,
+      allScores: aiResult.all_scores,
+      metadata: {
+        foldersAnalyzed: userFolders.length,
+        tokensUsed: aiResult.metadata?.tokens_used,
+        processingTime: aiResult.processing_time_ms
+      }
+    };
+
+  } catch (error) {
+    console.error('suggestFolder error:', error.message);
+    
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('AI service is unavailable. Please ensure the AI backend is running.');
+    }
+    
+    if (error.response?.data?.detail) {
+      throw new Error(`AI Error: ${error.response.data.detail}`);
+    }
+    
+    throw new Error(`Failed to suggest folder: ${error.message}`);
+  }
+}
 }
 
 module.exports = new AIService();

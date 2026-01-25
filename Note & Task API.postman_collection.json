@@ -2483,6 +2483,318 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "13. AI - Folder Suggestion",
+      "item": [
+        {
+          "name": "Suggest Folder - Found Match",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 503', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Has folder suggestion data', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "    pm.expect(res.found).to.be.a('boolean');",
+                  "    pm.expect(res.confidence).to.be.a('number');",
+                  "    pm.expect(res.reasoning).to.exist;",
+                  "    pm.expect(res.allScores).to.be.an('array');",
+                  "    ",
+                  "    if (res.found) {",
+                  "      pm.expect(res.suggestedFolder).to.exist;",
+                  "      pm.expect(res.suggestedFolder._id).to.exist;",
+                  "      pm.expect(res.suggestedFolder.name).to.exist;",
+                  "      pm.expect(res.confidence).to.be.at.least(0.6);",
+                  "    } else {",
+                  "      pm.expect(res.suggestedFolder).to.be.null;",
+                  "      pm.expect(res.confidence).to.be.below(0.6);",
+                  "    }",
+                  "  });",
+                  "",
+                  "  pm.test('Has metadata', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.metadata).to.exist;",
+                  "    pm.expect(res.metadata.foldersAnalyzed).to.be.a('number');",
+                  "  });",
+                  "}",
+                  "",
+                  "if (pm.response.code === 503) {",
+                  "  pm.test('AI service unavailable', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.error).to.include('unavailable');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Cần học Python cơ bản về vòng lặp, hàm và class. Tìm hiểu về list comprehension và decorator.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/suggest-folder",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "suggest-folder"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Suggest Folder - Work Related",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 503', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Has suggestion', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "    pm.expect(res.allScores).to.be.an('array');",
+                  "    ",
+                  "    // Should have scores for all folders",
+                  "    pm.expect(res.allScores.length).to.be.greaterThan(0);",
+                  "    ",
+                  "    // Each score should have required fields",
+                  "    res.allScores.forEach(score => {",
+                  "      pm.expect(score.folder_name).to.exist;",
+                  "      pm.expect(score.score).to.be.a('number');",
+                  "      pm.expect(score.reason).to.exist;",
+                  "    });",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Hoàn thành báo cáo Q4, chuẩn bị slide presentation cho họp ban giám đốc, gửi email follow-up cho 10 khách hàng lớn.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/suggest-folder",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "suggest-folder"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Suggest Folder - Health Related",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 503', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Đặt lịch khám răng định kỳ, mua vitamin C và omega 3, tập gym 3 buổi tuần này.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/suggest-folder",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "suggest-folder"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Suggest Folder - No Match",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 503', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 503]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('No folder found', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "    pm.expect(res.found).to.be.false;",
+                  "    pm.expect(res.suggestedFolder).to.be.null;",
+                  "    pm.expect(res.confidence).to.be.below(0.6);",
+                  "    pm.expect(res.reasoning).to.include('không');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Công thức nấu phở bò truyền thống: xương hầm 8 tiếng, gia vị cần hồi, quế, gừng, hành tây.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/suggest-folder",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "suggest-folder"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error: Text Too Short",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => {",
+                  "  pm.expect(pm.response.code).to.equal(400);",
+                  "});",
+                  "",
+                  "pm.test('Has error message', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.error).to.include('minimum 10 characters');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Too short\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/suggest-folder",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "suggest-folder"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error: Missing Text",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => {",
+                  "  pm.expect(pm.response.code).to.equal(400);",
+                  "});",
+                  "",
+                  "pm.test('Has error message', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.error).to.include('required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/suggest-folder",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "suggest-folder"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
