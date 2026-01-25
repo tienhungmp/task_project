@@ -2795,6 +2795,484 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "14. Project Sharing",
+      "item": [
+        {
+          "name": "Share Project with User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 400 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 400, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Project shared successfully', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "    pm.expect(res.sharedWith).to.exist;",
+                  "    pm.expect(res.sharedWith._id).to.exist;",
+                  "    pm.expect(res.sharedWith.email).to.exist;",
+                  "    pm.expect(res.permission).to.equal('view');",
+                  "    pm.expect(res.sharedAt).to.exist;",
+                  "    ",
+                  "    // Save shared user ID for cleanup",
+                  "    pm.collectionVariables.set('sharedUserId', res.sharedWith._id);",
+                  "  });",
+                  "}",
+                  "",
+                  "if (pm.response.code === 400) {",
+                  "  pm.test('Has error message', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.error).to.exist;",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test1@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/share",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "share"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shared Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Has shared users data', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.owner).to.exist;",
+                  "    pm.expect(res.owner._id).to.exist;",
+                  "    pm.expect(res.owner.permission).to.equal('owner');",
+                  "    pm.expect(res.shares).to.be.an('array');",
+                  "    pm.expect(res.totalShares).to.be.a('number');",
+                  "    ",
+                  "    if (res.shares.length > 0) {",
+                  "      const share = res.shares[0];",
+                  "      pm.expect(share.user).to.exist;",
+                  "      pm.expect(share.user._id).to.exist;",
+                  "      pm.expect(share.user.name).to.exist;",
+                  "      pm.expect(share.user.email).to.exist;",
+                  "      pm.expect(share.permission).to.equal('view');",
+                  "      pm.expect(share.sharedAt).to.exist;",
+                  "    }",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/shares",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "shares"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Public Share Link",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Share link generated', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "    pm.expect(res.shareUrl).to.exist;",
+                  "    pm.expect(res.shareToken).to.exist;",
+                  "    pm.expect(res.isPublic).to.be.true;",
+                  "    ",
+                  "    // Save share token for testing public access",
+                  "    pm.collectionVariables.set('shareToken', res.shareToken);",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/share/public",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "share", "public"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Project by Public Link (No Auth)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Has project data', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res._id).to.exist;",
+                  "    pm.expect(res.name).to.exist;",
+                  "    pm.expect(res.description).to.exist;",
+                  "    pm.expect(res.permission).to.equal('view');",
+                  "    pm.expect(res.totalTasks).to.be.a('number');",
+                  "    pm.expect(res.completedTasks).to.be.a('number');",
+                  "    pm.expect(res.completionRate).to.be.a('number');",
+                  "  });",
+                  "}",
+                  "",
+                  "if (pm.response.code === 404) {",
+                  "  pm.test('Invalid share link', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.error).to.include('Invalid');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shared/projects/{{shareToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["shared", "projects", "{{shareToken}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Projects Shared With Me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => {",
+                  "  pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "pm.test('Has shared projects data', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.projects).to.be.an('array');",
+                  "  pm.expect(res.pagination).to.exist;",
+                  "  pm.expect(res.pagination.total).to.be.a('number');",
+                  "  ",
+                  "  if (res.projects.length > 0) {",
+                  "    const project = res.projects[0];",
+                  "    pm.expect(project._id).to.exist;",
+                  "    pm.expect(project.name).to.exist;",
+                  "    pm.expect(project.permission).to.equal('view');",
+                  "    pm.expect(project.sharedAt).to.exist;",
+                  "    pm.expect(project.owner).to.exist;",
+                  "    pm.expect(project.owner.name).to.exist;",
+                  "    pm.expect(project.totalTasks).to.be.a('number');",
+                  "    pm.expect(project.completionRate).to.be.a('number');",
+                  "  }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/shared/with-me?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "shared", "with-me"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unshare Project with User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Project unshared successfully', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "    pm.expect(res.message).to.include('unshared');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/share/{{sharedUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "share", "{{sharedUserId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke Public Share Link",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test('Public link revoked', () => {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "    pm.expect(res.message).to.include('revoked');",
+                  "  });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/share/public",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "share", "public"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error: Share with Self",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => {",
+                  "  pm.expect(pm.response.code).to.equal(400);",
+                  "});",
+                  "",
+                  "pm.test('Has error message', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.error).to.include('yourself');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/share",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "share"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error: Share with Non-existent User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => {",
+                  "  pm.expect(pm.response.code).to.equal(400);",
+                  "});",
+                  "",
+                  "pm.test('Has error message', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.error).to.include('not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/share",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "share"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error: Missing Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => {",
+                  "  pm.expect(pm.response.code).to.equal(400);",
+                  "});",
+                  "",
+                  "pm.test('Has error message', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.error).to.include('required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/share",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}", "share"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [

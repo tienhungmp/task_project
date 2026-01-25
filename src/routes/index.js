@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const checkProjectPermission = require('../middleware/checkProjectPermission');
 
 const authController = require('../controllers/auth.controller');
 const userController = require('../controllers/user.controller');
@@ -47,10 +48,18 @@ router.post('/folders/:id/access', authenticate, folderController.verifyAccess);
 
 // PROJECT ROUTES
 router.get('/projects', authenticate, projectController.getAll);
-router.get('/projects/:id', authenticate, projectController.getById);
 router.post('/projects', authenticate, validate(projectSchema), projectController.create);
-router.put('/projects/:id', authenticate, projectController.update);
-router.delete('/projects/:id', authenticate, projectController.delete);
+router.put('/projects/:id', authenticate, checkProjectPermission('owner'), projectController.update);
+router.delete('/projects/:id', authenticate, checkProjectPermission('owner'), projectController.delete);
+router.post('/projects/:id/share', authenticate, checkProjectPermission('owner'), projectController.shareWithUser);
+router.delete('/projects/:id/share/:userId', authenticate, checkProjectPermission('owner'), projectController.unshareWithUser);
+router.post('/projects/:id/share/public', authenticate, checkProjectPermission('owner'), projectController.generateShareLink);
+router.delete('/projects/:id/share/public', authenticate, checkProjectPermission('owner'), projectController.revokeShareLink);
+
+// Routes chỉ cần view permission
+router.get('/projects/:id', authenticate, checkProjectPermission('view'), projectController.getById);
+router.get('/projects/:id/shares', authenticate, checkProjectPermission('view'), projectController.getSharedUsers);
+router.get('/shared/projects/:token', projectController.getByShareToken);
 
 // CARD ROUTES
 router.get('/cards', authenticate, cardController.getAll);
