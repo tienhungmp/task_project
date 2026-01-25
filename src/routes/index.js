@@ -59,25 +59,21 @@ router.post('/cards', authenticate, validate(cardSchema), cardController.create)
 router.put('/cards/:id', authenticate, cardController.update);
 router.delete('/cards/:id', authenticate, cardController.delete);
 router.post('/cards/:id/move', authenticate, cardController.move);
-
-// Get cards by folder
 router.get('/folders/:folderId/cards', authenticate, cardController.getByFolder);
-
-// CHECKLIST ROUTES
 router.put('/cards/:cardId/checklist', authenticate, validate(checklistUpdateSchema), cardController.updateChecklist);
-
-// CONVERT ROUTES - Chuyển đổi Note <-> Task
 router.post('/cards/:id/convert-to-task', authenticate, validate(convertToTaskSchema), cardController.convertToTask);
 router.post('/cards/:id/convert-to-note', authenticate, validate(convertToNoteSchema), cardController.convertToNote);
-
-
 router.post('/cards/:id/blocks/:blockId/pin', authenticate, cardController.pinBlock);
 router.delete('/cards/:id/blocks/:blockId/pin', authenticate, cardController.unpinBlock);
 router.patch('/cards/:id/blocks/:blockId/toggle-pin', authenticate, cardController.togglePinBlock);
-
-// Block sorting
 router.put('/cards/:id/blocks/sort-preference', authenticate, validate(blocksSortPreferenceSchema), cardController.updateBlocksSortPreference);
 router.get('/cards/:id/blocks/sorted', authenticate, cardController.getBlocksSorted);
+// Block operations - OPTIMIZED UPLOAD
+// NEW: Tạo block + upload file trong 1 request
+router.post('/cards/:id/blocks/with-file', authenticate, upload.single('file'), cardController.addBlockWithFile);
+
+// NEW: Update block file (replace file cũ)
+router.put('/cards/:id/blocks/:blockId/file', authenticate, upload.single('file'), cardController.updateBlockFile);
 
 // Block operations
 router.post('/cards/:id/blocks', authenticate, cardController.addBlock);

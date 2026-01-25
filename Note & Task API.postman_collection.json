@@ -2087,6 +2087,402 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "12. Blocks - Optimized Upload",
+      "item": [
+        {
+          "name": "Add Image Block with File (1 API)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Image block created with file', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.success).to.be.true;",
+                  "  pm.expect(res.card).to.exist;",
+                  "  pm.expect(res.block).to.exist;",
+                  "  pm.expect(res.block.type).to.equal('image');",
+                  "  pm.expect(res.block.content.imageUrl).to.exist;",
+                  "  pm.expect(res.block.metadata.fileName).to.exist;",
+                  "  pm.expect(res.fileInfo).to.exist;",
+                  "  pm.collectionVariables.set('imageBlockId', res.block._id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/ADMIN/Downloads/test-image.jpg"
+                },
+                {
+                  "key": "type",
+                  "value": "image",
+                  "type": "text"
+                },
+                {
+                  "key": "caption",
+                  "value": "My beautiful sunset photo",
+                  "type": "text"
+                },
+                {
+                  "key": "isPinned",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/with-file",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "with-file"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Audio Block with File (1 API)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Audio block created with file', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.success).to.be.true;",
+                  "  pm.expect(res.card).to.exist;",
+                  "  pm.expect(res.block).to.exist;",
+                  "  pm.expect(res.block.type).to.equal('audio');",
+                  "  pm.expect(res.block.content.audioUrl).to.exist;",
+                  "  pm.expect(res.block.metadata.fileName).to.exist;",
+                  "  pm.expect(res.fileInfo).to.exist;",
+                  "  pm.collectionVariables.set('audioBlockId', res.block._id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/ADMIN/Downloads/voice-note.mp3"
+                },
+                {
+                  "key": "type",
+                  "value": "audio",
+                  "type": "text"
+                },
+                {
+                  "key": "order",
+                  "value": "5",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/with-file",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "with-file"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Pinned Image Block with File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Pinned image block created', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.success).to.be.true;",
+                  "  pm.expect(res.block.isPinned).to.be.true;",
+                  "  pm.expect(res.block.pinnedAt).to.exist;",
+                  "  pm.expect(res.block.type).to.equal('image');",
+                  "  pm.expect(res.block.content.imageUrl).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/ADMIN/Downloads/important-diagram.png"
+                },
+                {
+                  "key": "type",
+                  "value": "image",
+                  "type": "text"
+                },
+                {
+                  "key": "caption",
+                  "value": "Important reference diagram - always visible",
+                  "type": "text"
+                },
+                {
+                  "key": "isPinned",
+                  "value": "true",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/with-file",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "with-file"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Image Block File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Block file updated', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.success).to.be.true;",
+                  "  pm.expect(res.card).to.exist;",
+                  "  pm.expect(res.fileInfo).to.exist;",
+                  "  pm.expect(res.fileInfo.url).to.exist;",
+                  "  pm.expect(res.fileInfo.fileName).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/ADMIN/Downloads/new-image.jpg"
+                },
+                {
+                  "key": "caption",
+                  "value": "Updated caption for the new image",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/{{imageBlockId}}/file",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "cards",
+                "{{cardId}}",
+                "blocks",
+                "{{imageBlockId}}",
+                "file"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Audio Block File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Audio file replaced', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.success).to.be.true;",
+                  "  pm.expect(res.fileInfo.url).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/ADMIN/Downloads/new-recording.mp3"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/{{audioBlockId}}/file",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "cards",
+                "{{cardId}}",
+                "blocks",
+                "{{audioBlockId}}",
+                "file"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error: Invalid Block Type",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has error message', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.error).to.include('Invalid block type');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/ADMIN/Downloads/test.jpg"
+                },
+                {
+                  "key": "type",
+                  "value": "text",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/with-file",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "with-file"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error: No File Provided",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Has error message', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.error).to.include('File is required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "type",
+                  "value": "image",
+                  "type": "text"
+                },
+                {
+                  "key": "caption",
+                  "value": "No file attached",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/with-file",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "with-file"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [

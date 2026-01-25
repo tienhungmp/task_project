@@ -333,6 +333,202 @@ class CardController {
       res.status(400).json({ error: error.message });
     }
   }
+  // card.controller.js - Thêm method mới
+
+  /**
+   * POST /api/cards/:id/blocks/with-file
+   * Tạo block và upload file trong 1 request duy nhất
+   * Body (multipart/form-data):
+   *   - file: File (image/audio)
+   *   - type: string (image/audio)
+   *   - order: number (optional)
+   *   - caption: string (optional - cho image)
+   *   - isPinned: boolean (optional)
+   */
+  async addBlockWithFile(req, res) {
+    try {
+      const { type, order, caption, isPinned } = req.body;
+
+      // Validate type
+      if (!["image", "audio"].includes(type)) {
+        return res.status(400).json({
+          error:
+            "Invalid block type. Must be image or audio when uploading file",
+        });
+      }
+
+      // Check file
+      if (!req.file) {
+        return res.status(400).json({ error: "File is required" });
+      }
+
+      // Prepare block content based on type
+      const fileUrl = `/uploads/${req.file.filename}`;
+      let content = {};
+
+      if (type === "image") {
+        content = {
+          imageUrl: fileUrl,
+          imageCaption: caption || "",
+        };
+      } else if (type === "audio") {
+        content = {
+          audioUrl: fileUrl,
+          audioDuration: 0, // Client có thể update sau
+        };
+      }
+
+      // Create block data
+      const blockData = {
+        type,
+        order: order ? parseInt(order) : undefined,
+        isPinned: isPinned === "true" || isPinned === true,
+        content,
+        metadata: {
+          fileName: req.file.originalname,
+          fileSize: req.file.size,
+          mimeType: req.file.mimetype,
+        },
+      };
+
+      // Add block to card
+      const card = await cardService.addBlock(
+        req.params.id,
+        req.userId,
+        blockData,
+      );
+
+      res.json({
+        success: true,
+        card,
+        block: card.blocks[card.blocks.length - 1], // Return newly created block
+        fileInfo: {
+          url: fileUrl,
+          fileName: req.file.originalname,
+          fileSize: req.file.size,
+          mimeType: req.file.mimetype,
+        },
+      });
+    } catch (error) {
+      // Clean up uploaded file if error occurs
+      if (req.file) {
+        const fs = require("fs");
+        const filePath = req.file.path;
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  /**
+   * PUT /api/cards/:id/blocks/:blockId/file
+   * Update block với file mới (replace file cũ)
+   * Body (multipart/form-data):
+   *   - file: File (image/audio)
+   *   - caption: string (optional - cho image)
+   */
+  async updateBlockFile(req, res) {
+    try {
+      const { caption } = req.body;
+
+      if (!req.file) {
+        return res.status(400).json({ error: "File is required" });
+      }
+
+      // Get current block to determine type and delete old file
+      const card = await cardService.getById(req.params.id, req.userId);
+      const block = card.blocks.find(
+        (b) => b._id.toString() === req.params.blockId,
+      );
+
+      if (!block) {
+        return res.status(404).json({ error: "Block not found" });
+      }
+
+      if (!["image", "audio"].includes(block.type)) {
+        return res.status(400).json({
+          error: "Can only update file for image or audio blocks",
+        });
+      }
+
+      // Delete old file if exists
+      const fs = require("fs");
+      const path = require("path");
+      if (block.content?.imageUrl) {
+        const oldFilePath = path.join(
+          __dirname,
+          "../../",
+          block.content.imageUrl,
+        );
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      } else if (block.content?.audioUrl) {
+        const oldFilePath = path.join(
+          __dirname,
+          "../../",
+          block.content.audioUrl,
+        );
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+
+      // Prepare new content
+      const fileUrl = `/uploads/${req.file.filename}`;
+      let content = { ...block.content };
+
+      if (block.type === "image") {
+        content.imageUrl = fileUrl;
+        if (caption !== undefined) {
+          content.imageCaption = caption;
+        }
+      } else if (block.type === "audio") {
+        content.audioUrl = fileUrl;
+      }
+
+      // Update metadata
+      content.metadata = {
+        ...content.metadata,
+        fileName: req.file.originalname,
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype,
+      };
+
+      // Update block
+      const updatedCard = await cardService.updateBlock(
+        req.params.id,
+        req.userId,
+        req.params.blockId,
+        content,
+      );
+
+      res.json({
+        success: true,
+        card: updatedCard,
+        fileInfo: {
+          url: fileUrl,
+          fileName: req.file.originalname,
+          fileSize: req.file.size,
+          mimeType: req.file.mimetype,
+        },
+      });
+    } catch (error) {
+      // Clean up uploaded file if error occurs
+      if (req.file) {
+        const fs = require("fs");
+        const filePath = req.file.path;
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new CardController();
