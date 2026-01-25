@@ -64,13 +64,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
             }
           },
           "response": []
@@ -107,13 +102,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -147,13 +137,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/refresh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "refresh"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
             }
           },
           "response": []
@@ -191,13 +176,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/user/profile",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user",
-                "profile"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "profile"]
             }
           },
           "response": []
@@ -252,13 +232,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/user/profile",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user",
-                "profile"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "profile"]
             }
           },
           "response": []
@@ -302,13 +277,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/user/avatar",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user",
-                "avatar"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "avatar"]
             }
           },
           "response": []
@@ -348,13 +318,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/user/password",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user",
-                "password"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "password"]
             }
           },
           "response": []
@@ -399,12 +364,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/areas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "areas"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"]
             }
           },
           "response": []
@@ -436,12 +397,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/areas?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "areas"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"],
               "query": [
                 {
                   "key": "page",
@@ -476,13 +433,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/areas/{{areaId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "areas",
-                "{{areaId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["areas", "{{areaId}}"]
             }
           },
           "response": []
@@ -527,12 +479,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "folders"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["folders"]
             }
           },
           "response": []
@@ -557,12 +505,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "folders"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["folders"]
             }
           },
           "response": []
@@ -587,13 +531,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders/{{folderId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "folders",
-                "{{folderId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["folders", "{{folderId}}"]
             }
           },
           "response": []
@@ -610,12 +549,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/folders?areaId={{areaId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "folders"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["folders"],
               "query": [
                 {
                   "key": "areaId",
@@ -646,14 +581,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/folders/{{folderId}}/access",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "folders",
-                "{{folderId}}",
-                "access"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["folders", "{{folderId}}", "access"]
             }
           },
           "response": []
@@ -698,12 +627,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/projects",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "projects"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["projects"]
             }
           },
           "response": []
@@ -742,13 +667,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/projects/{{projectId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "projects",
-                "{{projectId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}"]
             }
           },
           "response": []
@@ -793,12 +713,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/projects?areaId={{areaId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "projects"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["projects"],
               "query": [
                 {
                   "key": "areaId",
@@ -832,13 +748,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/projects/{{projectId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "projects",
-                "{{projectId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "{{projectId}}"]
             }
           },
           "response": []
@@ -881,12 +792,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards"]
             }
           },
           "response": []
@@ -911,12 +818,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards"]
             }
           },
           "response": []
@@ -933,12 +836,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/cards?projectId={{projectId}}&status=todo&page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["cards"],
               "query": [
                 {
                   "key": "projectId",
@@ -989,14 +888,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/folders/{{folderId}}/cards?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "folders",
-                "{{folderId}}",
-                "cards"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["folders", "{{folderId}}", "cards"],
               "query": [
                 {
                   "key": "page",
@@ -1031,13 +924,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards",
-                "{{cardId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}"]
             }
           },
           "response": []
@@ -1062,14 +950,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/checklist",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards",
-                "{{cardId}}",
-                "checklist"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "checklist"]
             }
           },
           "response": []
@@ -1094,14 +976,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/move",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards",
-                "{{cardId}}",
-                "move"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "move"]
             }
           },
           "response": []
@@ -1118,13 +994,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards",
-                "{{cardId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}"]
             }
           },
           "response": []
@@ -1149,14 +1020,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/convert-to-task",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards",
-                "{{cardId}}",
-                "convert-to-task"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "convert-to-task"]
             }
           },
           "response": []
@@ -1181,14 +1046,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cards/{{cardId}}/convert-to-note",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cards",
-                "{{cardId}}",
-                "convert-to-note"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "convert-to-note"]
             }
           },
           "response": []
@@ -1210,12 +1069,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/search?q=documentation&tags[]=urgent&tags[]=work&dateFrom=2026-01-01",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "search"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
               "query": [
                 {
                   "key": "q",
@@ -1255,13 +1110,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/dashboard/energy-overview",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "energy-overview"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "energy-overview"]
             }
           },
           "response": []
@@ -1278,13 +1128,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/dashboard/stats?period=week",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "stats"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "stats"],
               "query": [
                 {
                   "key": "period",
@@ -1307,13 +1152,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/dashboard/stats?period=month",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "stats"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "stats"],
               "query": [
                 {
                   "key": "period",
@@ -1341,12 +1181,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/sync?lastSync=2026-01-01T00:00:00Z",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "sync"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["sync"],
               "query": [
                 {
                   "key": "lastSync",
@@ -1387,13 +1223,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ai/health",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ai",
-                "health"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "health"]
             }
           },
           "response": []
@@ -1453,13 +1284,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ai/analyze-card",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ai",
-                "analyze-card"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "analyze-card"]
             }
           },
           "response": []
@@ -1520,13 +1346,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ai/classify-note",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ai",
-                "classify-note"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "classify-note"]
             }
           },
           "response": []
@@ -1590,14 +1411,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/ai/auto-organize/{{cardId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ai",
-                "auto-organize",
-                "{{cardId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "auto-organize", "{{cardId}}"]
             }
           },
           "response": []
@@ -1624,13 +1439,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ai/suggest-project",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ai",
-                "suggest-project"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "suggest-project"]
             }
           },
           "response": []
@@ -1657,13 +1467,621 @@
             },
             "url": {
               "raw": "{{baseUrl}}/ai/create-project",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "create-project"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11. Blocks",
+      "item": [
+        {
+          "name": "Add Text Block",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Block added', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.blocks).to.be.an('array');",
+                  "  pm.expect(res.blocks.length).to.be.greaterThan(0);",
+                  "  const lastBlock = res.blocks[res.blocks.length - 1];",
+                  "  pm.collectionVariables.set('blockId', lastBlock._id);",
+                  "  pm.expect(lastBlock.type).to.equal('text');",
+                  "  pm.expect(lastBlock.metadata.createdAt).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"text\",\n  \"content\": {\n    \"text\": \"This is a sample text block\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Image Block",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"image\",\n  \"content\": {\n    \"imageUrl\": \"https://example.com/image.jpg\",\n    \"imageCaption\": \"Sample diagram\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Checkbox Block",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"checkbox\",\n  \"content\": {\n    \"checked\": false,\n    \"label\": \"Complete this task\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Audio Block",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"audio\",\n  \"content\": {\n    \"audioUrl\": \"https://example.com/recording.mp3\",\n    \"audioDuration\": 120\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Pinned Block",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"text\",\n  \"content\": {\n    \"text\": \"Important pinned note!\"\n  },\n  \"isPinned\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Block",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Block updated', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.blocks).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": {\n    \"text\": \"Updated text block content\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/{{blockId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "{{blockId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pin Block",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Block pinned', () => {",
+                  "  const res = pm.response.json();",
+                  "  const block = res.blocks.find(b => b._id === pm.collectionVariables.get('blockId'));",
+                  "  pm.expect(block.isPinned).to.be.true;",
+                  "  pm.expect(block.pinnedAt).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/{{blockId}}/pin",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "{{blockId}}", "pin"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unpin Block",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Block unpinned', () => {",
+                  "  const res = pm.response.json();",
+                  "  const block = res.blocks.find(b => b._id === pm.collectionVariables.get('blockId'));",
+                  "  pm.expect(block.isPinned).to.be.false;",
+                  "  pm.expect(block.pinnedAt).to.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/{{blockId}}/pin",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "{{blockId}}", "pin"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Pin Block",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Pin toggled', () => {",
+                  "  const res = pm.response.json();",
+                  "  const block = res.blocks.find(b => b._id === pm.collectionVariables.get('blockId'));",
+                  "  pm.expect(block.isPinned).to.be.a('boolean');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/{{blockId}}/toggle-pin",
+              "host": ["{{baseUrl}}"],
               "path": [
-                "ai",
-                "create-project"
+                "cards",
+                "{{cardId}}",
+                "blocks",
+                "{{blockId}}",
+                "toggle-pin"
               ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Sort Preference (CreatedAt Desc)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sort preference updated', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.blocksSortBy).to.equal('createdAt');",
+                  "  pm.expect(res.blocksSortOrder).to.equal('desc');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortBy\": \"createdAt\",\n  \"sortOrder\": \"desc\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/sort-preference",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "sort-preference"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Sort Preference (Order Asc)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortBy\": \"order\",\n  \"sortOrder\": \"asc\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/sort-preference",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "sort-preference"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Sorted Blocks (Custom)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has sorted blocks', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.blocks).to.be.an('array');",
+                  "  ",
+                  "  // Check pinned blocks are first",
+                  "  const pinnedBlocks = res.blocks.filter(b => b.isPinned);",
+                  "  const unpinnedBlocks = res.blocks.filter(b => !b.isPinned);",
+                  "  ",
+                  "  if (pinnedBlocks.length > 0) {",
+                  "    const firstPinnedIndex = res.blocks.findIndex(b => b.isPinned);",
+                  "    const firstUnpinnedIndex = res.blocks.findIndex(b => !b.isPinned);",
+                  "    ",
+                  "    if (firstUnpinnedIndex !== -1) {",
+                  "      pm.expect(firstPinnedIndex).to.be.lessThan(firstUnpinnedIndex);",
+                  "    }",
+                  "  }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/sorted?sortBy=createdAt&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "sorted"],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Card with Sorted Blocks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has sortedBlocks virtual', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.sortedBlocks).to.be.an('array');",
+                  "  pm.expect(res.blocks).to.be.an('array');",
+                  "  pm.expect(res.blocksSortBy).to.exist;",
+                  "  pm.expect(res.blocksSortOrder).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reorder Blocks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Blocks reordered', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.blocks).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blockOrders\": [\n    {\"blockId\": \"{{blockId}}\", \"order\": 0}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/reorder",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "reorder"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update All Blocks",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"order\": 0,\n      \"isPinned\": false,\n      \"content\": {\"text\": \"First block\"}\n    },\n    {\n      \"type\": \"checkbox\",\n      \"order\": 1,\n      \"isPinned\": true,\n      \"content\": {\"checked\": false, \"label\": \"Important task\"}\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Block",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Block deleted', () => {",
+                  "  const res = pm.response.json();",
+                  "  const block = res.blocks.find(b => b._id === pm.collectionVariables.get('blockId'));",
+                  "  pm.expect(block).to.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/blocks/{{blockId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "{{cardId}}", "blocks", "{{blockId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Block File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('File uploaded', () => {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.url).to.exist;",
+                  "  pm.expect(res.fileName).to.exist;",
+                  "  pm.expect(res.fileSize).to.exist;",
+                  "  pm.expect(res.mimeType).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/your/test-image.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cards/blocks/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["cards", "blocks", "upload"]
             }
           },
           "response": []

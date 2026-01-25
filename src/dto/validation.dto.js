@@ -66,6 +66,65 @@ const convertToNoteSchema = Joi.object({
   folderId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().allow(null)
 });
 
+const blockContentSchema = Joi.object({
+  // Text/Heading
+  text: Joi.string().allow('').optional(),
+  
+  // Image
+  imageUrl: Joi.string().uri().optional(),
+  imageCaption: Joi.string().allow('').optional(),
+  
+  // Audio
+  audioUrl: Joi.string().uri().optional(),
+  audioDuration: Joi.number().optional(),
+  
+  // Checkbox
+  checked: Joi.boolean().optional(),
+  label: Joi.string().optional(),
+  
+  // List
+  items: Joi.array().items(Joi.object({
+    text: Joi.string().required(),
+    checked: Joi.boolean().optional()
+  })).optional()
+}).optional();
+
+const blockSchema = Joi.object({
+  _id: Joi.string().optional(),
+  type: Joi.string().valid('text', 'image', 'audio', 'checkbox', 'heading', 'list').required(),
+  order: Joi.number().required(),
+  content: blockContentSchema,
+  metadata: Joi.object().optional()
+});
+
+const addBlockSchema = Joi.object({
+  type: Joi.string().valid('text', 'image', 'audio', 'checkbox', 'heading', 'list').required(),
+  content: blockContentSchema.required(),
+  order: Joi.number().optional(),
+  isPinned: Joi.boolean().optional().default(false)
+});
+
+const updateBlockSchema = Joi.object({
+  content: blockContentSchema.required()
+});
+
+const reorderBlocksSchema = Joi.object({
+  blockOrders: Joi.array().items(Joi.object({
+    blockId: Joi.string().required(),
+    order: Joi.number().required()
+  })).required()
+});
+
+const updateAllBlocksSchema = Joi.object({
+  blocks: Joi.array().items(blockSchema).required()
+});
+
+const blocksSortPreferenceSchema = Joi.object({
+  sortBy: Joi.string().valid('order', 'createdAt', 'updatedAt').required(),
+  sortOrder: Joi.string().valid('asc', 'desc').required()
+});
+
+
 module.exports = {
   areaSchema,
   folderSchema,
@@ -73,5 +132,10 @@ module.exports = {
   cardSchema,
   checklistUpdateSchema,
   convertToTaskSchema,
-  convertToNoteSchema
+  convertToNoteSchema,
+  addBlockSchema,
+  updateBlockSchema,
+  reorderBlocksSchema,
+  updateAllBlocksSchema,
+  blocksSortPreferenceSchema
 };

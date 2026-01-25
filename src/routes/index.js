@@ -15,7 +15,7 @@ const validate = require('../middleware/validate');
 const upload = require('../middleware/upload');
 
 const { registerSchema, loginSchema, refreshTokenSchema, updateProfileSchema, changePasswordSchema } = require('../dto/auth.dto');
-const { areaSchema, folderSchema, projectSchema, cardSchema, checklistUpdateSchema, convertToTaskSchema, convertToNoteSchema } = require('../dto/validation.dto');
+const { areaSchema, folderSchema, projectSchema, cardSchema, checklistUpdateSchema, convertToTaskSchema, convertToNoteSchema, blocksSortPreferenceSchema } = require('../dto/validation.dto');
 
 const statsController = require('../controllers/stats.controller');
 
@@ -69,6 +69,23 @@ router.put('/cards/:cardId/checklist', authenticate, validate(checklistUpdateSch
 // CONVERT ROUTES - Chuyển đổi Note <-> Task
 router.post('/cards/:id/convert-to-task', authenticate, validate(convertToTaskSchema), cardController.convertToTask);
 router.post('/cards/:id/convert-to-note', authenticate, validate(convertToNoteSchema), cardController.convertToNote);
+
+
+router.post('/cards/:id/blocks/:blockId/pin', authenticate, cardController.pinBlock);
+router.delete('/cards/:id/blocks/:blockId/pin', authenticate, cardController.unpinBlock);
+router.patch('/cards/:id/blocks/:blockId/toggle-pin', authenticate, cardController.togglePinBlock);
+
+// Block sorting
+router.put('/cards/:id/blocks/sort-preference', authenticate, validate(blocksSortPreferenceSchema), cardController.updateBlocksSortPreference);
+router.get('/cards/:id/blocks/sorted', authenticate, cardController.getBlocksSorted);
+
+// Block operations
+router.post('/cards/:id/blocks', authenticate, cardController.addBlock);
+router.put('/cards/:id/blocks/:blockId', authenticate, cardController.updateBlock);
+router.delete('/cards/:id/blocks/:blockId', authenticate, cardController.deleteBlock);
+router.put('/cards/:id/blocks/reorder', authenticate, cardController.reorderBlocks);
+router.put('/cards/:id/blocks', authenticate, cardController.updateAllBlocks);
+router.post('/cards/blocks/upload', authenticate, upload.single('file'), cardController.uploadBlockFile);
 
 // NOTIFICATION ROUTES
 router.get('/notifications', authenticate, notificationController.getAll);
