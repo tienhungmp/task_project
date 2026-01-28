@@ -55,6 +55,7 @@ router.post('/projects/:id/share', authenticate, checkProjectPermission('owner')
 router.delete('/projects/:id/share/:userId', authenticate, checkProjectPermission('owner'), projectController.unshareWithUser);
 router.post('/projects/:id/share/public', authenticate, checkProjectPermission('owner'), projectController.generateShareLink);
 router.delete('/projects/:id/share/public', authenticate, checkProjectPermission('owner'), projectController.revokeShareLink);
+router.get('/projects/shared/with-me', authenticate, projectController.getSharedWithMe);
 
 // Routes chỉ cần view permission
 router.get('/projects/:id', authenticate, checkProjectPermission('view'), projectController.getById);
@@ -67,6 +68,8 @@ router.get('/cards/:id', authenticate, cardController.getById);
 router.post('/cards', authenticate, validate(cardSchema), cardController.create);
 router.put('/cards/:id', authenticate, cardController.update);
 router.delete('/cards/:id', authenticate, cardController.delete);
+router.put('/cards/:id/archive', authenticate, cardController.archive);
+router.put('/cards/:id/unarchive', authenticate, cardController.unarchive);
 router.post('/cards/:id/move', authenticate, cardController.move);
 router.get('/folders/:folderId/cards', authenticate, cardController.getByFolder);
 router.put('/cards/:cardId/checklist', authenticate, validate(checklistUpdateSchema), cardController.updateChecklist);

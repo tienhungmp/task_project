@@ -432,6 +432,16 @@ async getSharedWithMe(userId, page = 1, limit = 20) {
           ? Math.round((completedTasks / totalTasks) * 100) 
           : 0;
 
+        const cards = await Card.find({
+          projectId: project._id,
+          deletedAt: null
+        })
+          .sort({ createdAt: -1 })
+          .populate('areaId', 'name color icon')
+          .populate('folderId', 'name color icon')
+          .populate('projectId', 'name color icon')
+          .lean();
+
         // Find share info
         const share = project.shares.find(
           s => s.sharedWith.toString() === userId.toString()
@@ -444,7 +454,8 @@ async getSharedWithMe(userId, page = 1, limit = 20) {
           completionRate,
           permission: share?.permission || 'view',
           sharedAt: share?.sharedAt,
-          owner: project.userId
+          owner: project.userId,
+          cards
         };
       })
     );

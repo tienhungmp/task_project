@@ -1,12 +1,27 @@
 const Card = require("../models/Card");
+const Project = require("../models/Project");
 const notificationService = require("./notification.service");
 
 class CardService {
   async getAll(userId, filters = {}, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
-    const query = { userId, deletedAt: null };
+    const query = { deletedAt: null };
 
-    if (filters.projectId) query.projectId = filters.projectId;
+    if (filters.projectId) {
+      const access = await this._checkProjectAccess(filters.projectId, userId);
+      if (!access.hasAccess) {
+        throw new Error("You do not have access to this project");
+      }
+
+      query.projectId = filters.projectId;
+
+      if (access.permission === "owner") {
+        query.userId = userId;
+      }
+    } else {
+      query.userId = userId;
+    }
+
     if (filters.folderId) query.folderId = filters.folderId;
     if (filters.areaId) query.areaId = filters.areaId;
     if (filters.status) query.status = filters.status;
@@ -72,15 +87,23 @@ class CardService {
   }
 
   async getById(id, userId) {
-    const card = await Card.findOne({
-      _id: id,
-      userId,
-      deletedAt: null,
-    }).lean();
+    const card = await Card.findOne({ _id: id, deletedAt: null }).lean();
     if (!card) {
       throw new Error("Card not found");
     }
-    return card;
+
+    if (card.userId?.toString() === userId.toString()) {
+      return card;
+    }
+
+    if (card.projectId) {
+      const access = await this._checkProjectAccess(card.projectId, userId);
+      if (access.hasAccess) {
+        return card;
+      }
+    }
+
+    throw new Error("You do not have access to this card");
   }
 
   async create(userId, data) {
@@ -114,6 +137,34 @@ class CardService {
     const card = await Card.findOneAndUpdate(
       { _id: id, userId, deletedAt: null },
       { deletedAt: new Date(), isArchived: true },
+      { new: true },
+    );
+
+    if (!card) {
+      throw new Error("Card not found");
+    }
+
+    return card;
+  }
+
+  async archive(id, userId) {
+    const card = await Card.findOneAndUpdate(
+      { _id: id, userId, deletedAt: null },
+      { isArchived: true },
+      { new: true },
+    );
+
+    if (!card) {
+      throw new Error("Card not found");
+    }
+
+    return card;
+  }
+
+  async unarchive(id, userId) {
+    const card = await Card.findOneAndUpdate(
+      { _id: id, userId, deletedAt: null },
+      { isArchived: false },
       { new: true },
     );
 
@@ -266,6 +317,15 @@ class CardService {
         console.error("Error creating notifications:", error);
       }
     });
+  }
+
+  async _checkProjectAccess(projectId, userId) {
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return { hasAccess: false, permission: null };
+    }
+
+    return project.hasAccess(userId);
   }
 
   // services/card.service.js - thêm methods

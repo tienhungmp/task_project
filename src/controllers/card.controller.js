@@ -74,6 +74,24 @@ class CardController {
     }
   }
 
+  async archive(req, res) {
+    try {
+      const card = await cardService.archive(req.params.id, req.userId);
+      res.json(card);
+    } catch (error) {
+      res.status(404).json({ error: error.message });
+    }
+  }
+
+  async unarchive(req, res) {
+    try {
+      const card = await cardService.unarchive(req.params.id, req.userId);
+      res.json(card);
+    } catch (error) {
+      res.status(404).json({ error: error.message });
+    }
+  }
+
   async move(req, res) {
     try {
       const { targetProjectId } = req.body;
